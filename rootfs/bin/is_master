@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# fail fast
+set -e
+
+# check if database is running
+pg_ctl status -D /app/data
+
+QUERY=$(psql -Atc 'SELECT pg_is_in_recovery()')
+
+if [ "$QUERY" == "f" ]; then
+    exit 0
+fi
+
+exit 1

@@ -1,0 +1,22 @@
+loop_wait: 5
+etcd:
+  scope: deis-db
+  ttl: 10
+  host: 127.0.0.1:4001
+postgresql:
+  listen: 127.0.0.1:5432
+  data_dir: /app/data
+  maximum_lag_on_failover: 1048576 # 1 megabyte in bytes
+  replication:
+    username: replicator
+    password: rep-pass
+    network:  0.0.0.0/0
+  parameters:
+    archive_mode: "on"
+    wal_level: hot_standby
+    archive_command: wal-e wal-push %p
+    archive_timeout: 60
+    max_wal_senders: 5
+    wal_keep_segments: 8
+    max_replication_slots: 5
+    hot_standby: "on"

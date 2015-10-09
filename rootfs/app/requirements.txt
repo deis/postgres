@@ -1,0 +1,13 @@
+python-etcd
+psycopg2
+pyyaml
+
+# wal-e is required for backups to S3
+wal-e==0.8.1
+oslo.config>=1.12.0
+requests>=2.5.2
+gevent>=0.13.1
+boto>=2.6.0
+azure>=0.7.0
+python-swiftclient>=1.8.0
+python-keystoneclient>=0.4.2

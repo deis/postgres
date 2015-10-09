@@ -1,0 +1,23 @@
+{
+   "kind":"Service",
+   "apiVersion":"v1",
+   "metadata":{
+      "name":"deis-postgres",
+      "labels":{
+         "name":"deis-postgres",
+         "app":"deis"
+      }
+   },
+   "spec":{
+      "ports": [
+        {
+          "port":5432,
+          "targetPort": "db-port",
+          "protocol":"TCP"
+        }
+      ],
+      "selector":{
+         "name":"deis-postgres"
+      }
+   }
+}
