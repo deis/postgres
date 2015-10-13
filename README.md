@@ -26,7 +26,7 @@ To build a dev release of this image, you will also need your own registry, but 
 
 ```bash
 $ make build
-$ docker build -t deis/postgres:v0.0.1
+$ docker build -t deis/postgres:v0.0.1 rootfs
 $ docker push deis/postgres:v0.0.1
 ```
 

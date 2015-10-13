@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /var/cache/postgresql/backups
 RUN chown -R postgres:postgres /var/cache/postgresql/backups
 
-COPY rootfs /
+COPY . /
 
 RUN chown -R postgres:postgres /app
 
