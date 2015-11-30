@@ -1,24 +1,31 @@
-export GO15VENDOREXPERIMENT=1
-VERSION := 0.0.1
+include includes.mk
+
+# Short name, following [a-zA-Z_], used all over the place.
+SHORT_NAME := postgres
+
+# SemVer with build information is defined in the SemVer 2 spec, but Docker
+# doesn't allow +, so we use -.
+VERSION := 0.0.1-$(shell date "+%Y%m%d%H%M%S")
+
+# Legacy support for DEV_REGISTRY, plus new support for DEIS_REGISTRY.
+DEIS_REGISTRY ?= ${DEV_REGISTRY}
+
+IMAGE_PREFIX ?= deis/
+
+IMAGE := ${DEIS_REGISTRY}/${IMAGE_PREFIX}${SHORT_NAME}:${VERSION}
 
 all:
 	@echo "Use a Makefile to control top-level building of the project."
 
-build:
-	@echo "nothing to build"
+build: docker-build
 
-deploy: kube-service kube-rc
+docker-build: check-docker
+	docker build --rm -t ${IMAGE} rootfs
 
-kube-service:
-	kubectl create -f def/postgres-service.json
-
-kube-rc:
-	kubectl create -f def/postgres-rc.json
-
-kube-clean:
-	kubectl delete rc postgres
+docker-push: check-docker check-registry
+	docker push ${IMAGE}
 
 test:
-	@echo "no tests"
+	@echo "No tests"
 
-.PHONY: all build deploy kube-service kube-rc kube-clean test
+.PHONY: all build
