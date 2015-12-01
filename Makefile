@@ -6,9 +6,7 @@ include includes.mk
 # - Kubernetes service, rc, pod, secret, volume names
 SHORT_NAME := database
 
-# SemVer with build information is defined in the SemVer 2 spec, but Docker
-# doesn't allow +, so we use -.
-VERSION := 0.1.0-$(shell date "+%Y%m%d%H%M%S")
+BUILD_TAG := git-$(shell git rev-parse --short HEAD)
 
 # Legacy support for DEV_REGISTRY, plus new support for DEIS_REGISTRY.
 DEIS_REGISTRY ?= ${DEV_REGISTRY}
@@ -18,7 +16,7 @@ IMAGE_PREFIX ?= deis/
 # Kubernetes-specific information for RC, Service, and Image.
 RC := manifests/deis-${SHORT_NAME}-rc.tmp.yaml
 SVC := manifests/deis-${SHORT_NAME}-service.yaml
-IMAGE := ${DEIS_REGISTRY}/${IMAGE_PREFIX}${SHORT_NAME}:${VERSION}
+IMAGE := ${DEIS_REGISTRY}/${IMAGE_PREFIX}${SHORT_NAME}:${BUILD_TAG}
 
 all:
 	@echo "Use a Makefile to control top-level building of the project."
