@@ -1,4 +1,4 @@
-# Postgres
+# Deis Database
 
 A PostgreSQL database for use in the [Deis](http://deis.io) open source PaaS.
 

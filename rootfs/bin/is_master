@@ -4,9 +4,9 @@
 set -e
 
 # check if database is running
-pg_ctl status -D /app/data
+gosu postgres pg_ctl status -D $PGDATA
 
-QUERY=$(psql -Atc 'SELECT pg_is_in_recovery()')
+QUERY=$(gosu postgres psql -Atc 'SELECT pg_is_in_recovery()')
 
 if [ "$QUERY" == "f" ]; then
     exit 0

@@ -8,11 +8,11 @@ branches:
 services:
   - docker
 install:
-  - make build
+  - make docker-build
 script:
   - make test
 deploy:
   provider: script
-  script: contrib/ci/deploy.sh
+  script: _scripts/ci/deploy.sh
   on:
     branch: master
