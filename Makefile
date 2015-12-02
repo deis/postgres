@@ -6,7 +6,7 @@ include includes.mk
 # - Kubernetes service, rc, pod, secret, volume names
 SHORT_NAME := database
 
-BUILD_TAG := git-$(shell git rev-parse --short HEAD)
+BUILD_TAG ?= git-$(shell git rev-parse --short HEAD)
 
 # Legacy support for DEV_REGISTRY, plus new support for DEIS_REGISTRY.
 DEIS_REGISTRY ?= ${DEV_REGISTRY}
