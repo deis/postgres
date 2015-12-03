@@ -33,14 +33,14 @@ running:
 
 ```
 NAME                  READY     STATUS    RESTARTS   AGE
-deis-database-6wy8o   1/1       Running   0          32s
+postgres-6wy8o        1/1       Running   0          32s
 ```
 
 You can then query this pod as you would with any other Kubernetes pod:
 
 ```
-$ kubectl logs -f deis-database-6wy8o
-$ kubectl exec -it deis-database-6wy8o psql
+$ kubectl logs -f postgres-6wy8o
+$ kubectl exec -it postgres-6wy8o psql
 ```
 
 
