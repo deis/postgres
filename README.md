@@ -1,4 +1,4 @@
-# Deis Database
+# Postgres
 
 A PostgreSQL database for use in the [Deis](http://deis.io) open source PaaS.
 
@@ -12,64 +12,15 @@ Please add any [issues](https://github.com/deis/postgres/issues) you find with t
 
 ## Deploying
 
-In order to run this component in Kubernetes, a few prerequisites are needed:
-
- - An AWS account with S3 enabled
- - An external etcd cluster
- - your own kubernetes cluster
-
-In Deis, these services are provided to you automatically through [the store](http://docs.deis.io/en/latest/understanding_deis/components/#store)
-and [etcd](https://github.com/technosophos/etcd) components.
-
 To build a dev release of this image, you will also need your own registry, but DockerHub or
 [Quay](https://quay.io/) will do fine here. To build, run:
 
 ```bash
-$ make build
-$ docker build -t deis/postgres:v0.0.1 rootfs
-$ docker push deis/postgres:v0.0.1
+$ export DEIS_REGISTRY=myregistry.com:5000
+$ make docker-build docker-push
 ```
 
 This will compile the Docker image and push it to your registry.
-
-Then, you'll need to modify the kubernetes manifests to point to your S3 account and your etcd
-cluster. Open up the replication controller manifest and change the values:
-
-```
-$ git diff
-diff --git a/manifests/postgres-rc.json b/manifests/postgres-rc.json
-index a5cbb23..70d3bc2 100644
---- a/manifests/postgres-rc.json
-+++ b/manifests/postgres-rc.json
-@@ -22,15 +22,15 @@
-         "containers": [
-           {
-             "name": "deis-database",
--            "image": "CHANGEME",
-+            "image": "deis/postgres:v0.0.1",
-             "env": [
-               {
-                 "name" : "AWS_ACCESS_KEY_ID",
--                "value" : "CHANGEME"
-+                "value" : "FOO"
-               },
-               {
-                 "name" : "AWS_SECRET_ACCESS_KEY",
--                "value" : "CHANGEME"
-+                "value" : "BAR"
-               },
-               {
-                 "name" : "WALE_S3_PREFIX",
-@@ -38,7 +38,7 @@
-               },
-               {
-                 "name" : "ETCD_SERVICE_HOST",
--                "value" : "192.168.0.1"
-+                "value" : "10.0.1.100"
-               }
-             ],
-             "ports": [
-```
 
 After that, run
 
@@ -77,16 +28,15 @@ After that, run
 $ make deploy
 ```
 
-Which will deploy the component to kubernetes. After a while, you should see a few pods up with one
+Which will deploy the component to kubernetes. After a while, you should see one pod up with one
 running:
 
 ```
 NAME                  READY     STATUS    RESTARTS   AGE
 deis-database-6wy8o   1/1       Running   0          32s
-deis-database-rh00d   0/1       Running   0          32s
 ```
 
-You can then query these images as you would with any other Kubernetes pod:
+You can then query this pod as you would with any other Kubernetes pod:
 
 ```
 $ kubectl logs -f deis-database-6wy8o
@@ -95,8 +45,6 @@ $ kubectl exec -it deis-database-6wy8o psql
 
 
 ## Testing
-
-**Note**: At this time, tests from Deis v1 are still being ported over.
 
 You can run the test suite with
 
