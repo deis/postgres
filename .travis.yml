@@ -16,6 +16,6 @@ script:
   - make test
 deploy:
   provider: script
-  script: contrib/ci/deploy.sh
+  script: _scripts/deploy.sh
   on:
     branch: master
