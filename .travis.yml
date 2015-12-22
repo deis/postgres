@@ -9,7 +9,7 @@ services:
   - docker
 env:
   # HACK(bacongobbler): make travis tests work
-  - DEIS_REGISTRY=travis-ci
+  - DEIS_REGISTRY=travis-ci/
 install:
   - make docker-build
 script:
