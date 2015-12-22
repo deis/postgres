@@ -16,7 +16,7 @@ IMAGE_PREFIX ?= deis/
 # Kubernetes-specific information for RC, Service, and Image.
 RC := contrib/kubernetes/manifests/${SHORT_NAME}-rc.tmp.yaml
 SVC := contrib/kubernetes/manifests/${SHORT_NAME}-service.yaml
-IMAGE := ${DEIS_REGISTRY}${IMAGE_PREFIX}${SHORT_NAME}:${VERSION}
+IMAGE := ${DEIS_REGISTRY}${IMAGE_PREFIX}/${SHORT_NAME}:${VERSION}
 
 all:
 	@echo "Use a Makefile to control top-level building of the project."
