@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: quay.io/deisci/postgres:v2-alpha
+          image: quay.io/deis/postgres:2.0.0-alpha
+          imagePullPolicy: IfNotPresent
           env:
             - name: POSTGRES_USER
               value: "deis"
