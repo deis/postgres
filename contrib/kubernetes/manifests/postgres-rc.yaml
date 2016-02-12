@@ -17,14 +17,16 @@ spec:
         - name: postgres
           image: quay.io/deisci/postgres:v2-beta
           imagePullPolicy: Always
-          env:
-            - name: POSTGRES_USER
-              value: "deis"
-            - name: POSTGRES_PASSWORD
-              value: "changeme123"
           ports:
             - containerPort: 5432
           readinessProbe:
             exec:
               command:
                 - is_master
+          volumeMounts:
+            - name: postgres-secret
+              mountPath: /etc/secret-volume
+      volumes:
+        - name: postgres-secret
+          secret:
+            secretName: postgres-secret
