@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-# Copied from https://github.com/docker-library/postgres/blob/ec5ce80ca914e02c2d5eb9fde424039d4cee032e/9.4/docker-entrypoint.sh
+# Originally copied and modified from
+# https://github.com/docker-library/postgres/blob/ec5ce80ca914e02c2d5eb9fde424039d4cee032e/9.4/docker-entrypoint.sh
 #
 set -e
 
@@ -8,6 +9,9 @@ set_listen_addresses() {
 	sedEscapedValue="$(echo "$1" | sed 's/[\/&]/\\&/g')"
 	sed -ri "s/^#?(listen_addresses\s*=\s*)\S+/\1'$sedEscapedValue'/" "$PGDATA/postgresql.conf"
 }
+
+POSTGRES_USER="$(cat /var/run/secrets/deis/database/creds/user)"
+POSTGRES_PASSWORD="$(cat /var/run/secrets/deis/database/creds/password)"
 
 if [ "$1" = 'postgres' ]; then
 	mkdir -p "$PGDATA"
