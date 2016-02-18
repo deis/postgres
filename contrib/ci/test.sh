@@ -11,5 +11,7 @@ echo "testuser" > $CURRENT_DIR/tmp/user
 echo "icanttellyou" > $CURRENT_DIR/tmp/password
 JOB=$(docker run -dv $CURRENT_DIR/tmp:/var/run/secrets/deis/database/creds $1)
 sleep 10
+# display logs for debugging purposes
+docker logs $JOB
 docker exec $JOB is_master
 docker rm -f $JOB
