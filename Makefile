@@ -13,9 +13,7 @@ DEIS_REGISTRY ?= ${DEV_REGISTRY}
 
 IMAGE_PREFIX ?= deis
 
-# Kubernetes-specific information for RC, Service, and Image.
-RC := contrib/kubernetes/manifests/${SHORT_NAME}-rc.tmp.yaml
-SVC := contrib/kubernetes/manifests/${SHORT_NAME}-service.yaml
+# Canonical docker image name
 IMAGE := ${DEIS_REGISTRY}${IMAGE_PREFIX}/${SHORT_NAME}:${VERSION}
 
 all:
@@ -33,26 +31,7 @@ docker-build: check-docker
 docker-push: check-docker check-registry
 	docker push ${IMAGE}
 
-# Deploy is a Kubernetes-oriented target
-deploy: kube-service kube-rc
-
-# Some things, like services, have to be deployed before pods. This is an
-# example target. Others could perhaps include kube-secret, kube-volume, etc.
-kube-service: check-kubectl
-	kubectl create -f ${SVC}
-
-# When possible, we deploy with RCs.
-kube-rc: check-kubectl
-	kubectl create -f ${RC}
-
-kube-clean: check-kubectl
-	kubectl delete rc ${SHORT_NAME}
-
 test: check-docker
 	contrib/ci/test.sh ${IMAGE}
 
-update-manifests:
-	sed 's#\(image:\) .*#\1 $(IMAGE)#' contrib/kubernetes/manifests/${SHORT_NAME}-rc.yaml \
-		> ${RC}
-
-.PHONY: all build kube-up kube-down deploy
+.PHONY: all build deploy
