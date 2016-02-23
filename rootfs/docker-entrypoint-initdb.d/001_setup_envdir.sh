@@ -9,10 +9,13 @@ AWS_SECRET_ACCESS_KEY=$(cat access-secret-key)
 # setup envvars for wal-e
 cp access-key-id AWS_ACCESS_KEY_ID
 cp access-secret-key AWS_SECRET_ACCESS_KEY
-echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > WALE_S3_ENDPOINT
 echo "s3://$BUCKET_NAME" > WALE_S3_PREFIX
 if [ "$S3_URL" == "" ]; then
   echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > S3_URL
+  echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > WALE_S3_ENDPOINT
+else
+  # just need to set up WALE_S3_ENDPOINT because S3_URL already exists in the environment
+  echo "$S3_URL" > WALE_S3_ENDPOINT
 fi
 
 
