@@ -3,8 +3,12 @@
 cd "$WALE_ENVDIR"
 
 # access-key-id and access-secret-key files are mounted in via kubernetes secrets
-AWS_ACCESS_KEY_ID=$(cat access-key-id)
-AWS_SECRET_ACCESS_KEY=$(cat access-secret-key)
+if [ "$AWS_ACCESS_KEY_ID" == "" ]; then
+  AWS_ACCESS_KEY_ID=$(cat access-key-id)
+fi
+if [ "$AWS_SECRET_ACCESS_KEY" == "" ]; then
+  AWS_SECRET_ACCESS_KEY=$(cat access-secret-key)
+fi
 
 # setup envvars for wal-e
 cp access-key-id AWS_ACCESS_KEY_ID
@@ -31,9 +35,13 @@ EOF
 # HACK (bacongobbler): minio *must* use us-east-1 and signature version 4
 # for authentication.
 # see https://github.com/minio/minio#how-to-use-aws-cli-with-minio
+if [ "$AWS_DEFAULT_REGION" == "" ]; then
+  AWS_DEFAULT_REGION="us-east-1"
+fi
+
 cat << EOF > /root/.aws/config
 [default]
-region = us-east-1
+region = $AWS_DEFAULT_REGION
 s3 =
     signature_version = s3v4
 EOF
