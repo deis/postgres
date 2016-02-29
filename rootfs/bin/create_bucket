@@ -7,12 +7,14 @@ import boto3
 import botocore
 from botocore.utils import fix_s3_host
 
-bucket_name = sys.argv[1]
+bucket_name = os.getenv('BUCKET_NAME')
 
-conn = boto3.resource('s3', endpoint_url=os.getenv('S3_URL'))
-
-# stop boto3 from automatically changing the endpoint
-conn.meta.client.meta.events.unregister('before-sign.s3', fix_s3_host)
+if os.getenv('DATABASE_STORAGE') == "s3":
+    conn = boto3.resource('s3')
+else:
+    conn = boto3.resource('s3', endpoint_url=os.getenv('S3_URL'))
+    # stop boto3 from automatically changing the endpoint
+    conn.meta.client.meta.events.unregister('before-sign.s3', fix_s3_host)
 
 exists = True
 try:
