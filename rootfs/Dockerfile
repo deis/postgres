@@ -66,8 +66,6 @@ COPY . /
 ENV WALE_ENVDIR /etc/wal-e.d/env
 RUN mkdir -p $WALE_ENVDIR
 
-ENV BUCKET_NAME dbwal
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 5432
 CMD ["postgres"]
