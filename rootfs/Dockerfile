@@ -55,7 +55,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sSL https://raw.githubusercontent.com/pypa/pip/7.1.2/contrib/get-pip.py | python -
 
 # install wal-e
-RUN pip install --disable-pip-version-check --no-cache-dir git+https://github.com/bacongobbler/wal-e.git@boto3-upgrade
+RUN pip install --disable-pip-version-check --no-cache-dir git+https://github.com/deis/wal-e.git@boto3-upgrade
 
 # install python port of daemontools
 RUN pip install --disable-pip-version-check --no-cache-dir envdir
