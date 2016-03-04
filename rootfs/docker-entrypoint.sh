@@ -54,7 +54,7 @@ if [ "$1" = 'postgres' ]; then
 
 		# internal start of server in order to allow set-up using psql-client
 		# does not listen on TCP/IP and waits until start finishes
-		gosu postgres pg_ctl -D "$PGDATA" \
+		gosu postgres pg_ctl \
 			-o "-c listen_addresses=''" \
 			-w start
 
@@ -78,23 +78,20 @@ if [ "$1" = 'postgres' ]; then
 		psql --username postgres <<-EOSQL
 			$op USER "$POSTGRES_USER" WITH SUPERUSER $pass ;
 		EOSQL
-		echo
+
+		gosu postgres pg_ctl -m fast -w stop
 
 		echo
+		echo
+
 		for f in /docker-entrypoint-initdb.d/*; do
 			case "$f" in
 				*.sh)  echo "$0: running $f"; . "$f" ;;
-				*.sql)
-					echo "$0: running $f";
-					psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" < "$f"
-					echo
-					;;
 				*)     echo "$0: ignoring $f" ;;
 			esac
 			echo
 		done
 
-		gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
 		set_listen_addresses '*'
 
 		echo
