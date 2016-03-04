@@ -4,23 +4,12 @@ cat << EOF >> "$PGDATA/postgresql.conf"
 wal_level = archive
 EOF
 
-# ensure $PGDATA has the right permissions
-chown -R postgres:postgres "$PGDATA"
-chmod 0700 "$PGDATA"
-
-# reboot the server for wal_level to be set before backing up
-echo "Rebooting postgres to enable archive mode"
-gosu postgres pg_ctl -D "$PGDATA" -w restart
-
 # check if there are any backups -- if so, let's restore
 # we could probably do better than just testing number of lines -- one line is just a heading, meaning no backups
 if [[ $(envdir "$WALE_ENVDIR" wal-e --terse backup-list | wc -l) -gt "1" ]]; then
   echo "Found backups on S3. Restoring from backup..."
-  gosu postgres pg_ctl -D "$PGDATA" -w stop
   rm -rf "$PGDATA"
   envdir "$WALE_ENVDIR" wal-e backup-fetch "$PGDATA" LATEST
-  chown -R postgres:postgres "$PGDATA"
-  chmod 0700 "$PGDATA"
   cat << EOF > "$PGDATA/postgresql.conf"
 # These settings are initialized by initdb, but they can be changed.
 log_timezone = 'UTC'
@@ -44,13 +33,21 @@ host    all             all             0.0.0.0/0               md5
 EOF
   touch "$PGDATA/pg_ident.conf"
   echo "restore_command = 'envdir /etc/wal-e.d/env wal-e wal-fetch \"%f\" \"%p\"'" >> "$PGDATA/recovery.conf"
-  gosu postgres pg_ctl -D "$PGDATA" \
-      -o "-c listen_addresses=''" \
-      -w start
+  echo "Done restoring from backup"
 else
-  echo "No backups found. Performing an initial backup..."
+  echo "No backups found. Booting postgres to perform an initial backup..."
+  gosu postgres pg_ctl -o "-c listen-addresses=''" -w start
+  echo "Performing an initial backup..."
   gosu postgres envdir "$WALE_ENVDIR" wal-e backup-push "$PGDATA"
+  echo "Shutting down, then continuing with the rest of the bootstrap process."
+  gosu postgres pg_ctl -w stop
 fi
+
+cat << EOF >> "$PGDATA/postgresql.conf"
+archive_mode = on
+archive_command = 'envdir "${WALE_ENVDIR}" wal-e wal-push %p'
+archive_timeout = 60
+EOF
 
 # ensure $PGDATA has the right permissions
 chown -R postgres:postgres "$PGDATA"
