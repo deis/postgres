@@ -16,7 +16,13 @@ if [ "$DATABASE_STORAGE" == "s3" ]; then
 else
   # these only need to be set if we're not accessing S3 (boto will figure this out)
   echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > WALE_S3_ENDPOINT
-  echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > S3_URL
+  if [ "$DEIS_MINIO_SERVICE_PORT" == "80" ]; then
+    # If you add port 80 to the end of the endpoint_url, boto3 freaks out.
+    # God I hate boto3 some days.
+    echo "http://$DEIS_MINIO_SERVICE_HOST" > S3_URL
+  else
+    echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > S3_URL
+  fi
 fi
 
 echo $AWS_ACCESS_KEY_ID > AWS_ACCESS_KEY_ID
