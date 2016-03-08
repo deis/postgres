@@ -46,6 +46,7 @@ EOF
   echo "restore_command = 'envdir /etc/wal-e.d/env wal-e wal-fetch \"%f\" \"%p\"'" >> "$PGDATA/recovery.conf"
   gosu postgres pg_ctl -D "$PGDATA" \
       -o "-c listen_addresses=''" \
+      -t 1200 \
       -w start
 else
   echo "No backups found. Performing an initial backup..."
