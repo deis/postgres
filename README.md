@@ -33,7 +33,13 @@ In order to develop and test this component in a Deis cluster, you'll need the f
 
 ## Testing Your Code
 
-Once you have all the aforementioned prerequisites, you can build and (optionally) push a new Docker image with your changes.
+Once you have all the aforementioned prerequisites, you are ready to start writing code. Once you've finished building a new feature or fixed a bug, please write a unit or integration test for it if possible. See [an existing test](https://github.com/deis/postgres/blob/master/contrib/ci/test.sh) for an example test.
+
+If your feature or bugfix doesn't easily lend itself to unit/integration testing, you may need to add tests at a higher level. Please consider adding a test to our [end-to-end test suite](https://github.com/deis/workflow-e2e) in that case. If you do, please reference the end-to-end test pull request in your pull request for this repository.
+
+### Dogfooding
+
+Finally, we encourage you to [dogfood](https://en.wikipedia.org/wiki/Eating_your_own_dog_food) this component while you're writing code on it. To do so, you'll need to build and push Docker images with your changes.
 
 This project has a [Makefile](https://github.com/deis/postgres/blob/master/Makefile) that makes these tasks significantly easier. It requires the following environment variables to be set:
 
