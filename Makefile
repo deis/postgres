@@ -3,15 +3,10 @@
 # - Docker image name
 # - Kubernetes service, rc, pod, secret, volume names
 SHORT_NAME := postgres
-
-VERSION ?= git-$(shell git rev-parse --short HEAD)
-
-# Legacy support for DEV_REGISTRY, plus new support for DEIS_REGISTRY.
 DEIS_REGISTY ?= ${DEV_REGISTRY}/
 IMAGE_PREFIX ?= deis
 
-# Canonical docker image name
-IMAGE := ${DEIS_REGISTRY}${IMAGE_PREFIX}/${SHORT_NAME}:${VERSION}
+include versioning.mk
 
 all: docker-build docker-push
 
@@ -19,10 +14,7 @@ all: docker-build docker-push
 # We also alter the RC file to set the image name.
 docker-build:
 	docker build --rm -t ${IMAGE} rootfs
-
-# Push to a registry that Kubernetes can access.
-docker-push:
-	docker push ${IMAGE}
+	docker tag -f ${IMAGE} ${MUTABLE_IMAGE}
 
 test:
 	contrib/ci/test.sh ${IMAGE}
