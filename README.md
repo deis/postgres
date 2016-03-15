@@ -12,11 +12,6 @@ This Deis component is currently in beta status, and we welcome your input! If y
 
 This component is a PostgreSQL database for use in Kubernetes. It builds on the official [postgres](https://registry.hub.docker.com/_/postgres/) Docker image. While it's intended for use inside of the Deis open source [PaaS](https://en.wikipedia.org/wiki/Platform_as_a_service), it's flexible enough to be used as a standlone pod on any Kubernetes cluster.
 
-Master/slave replication and leader election code is largely inspired by [`compose/governor`](https://github.com/compose/governor).
-
-Please add any [issues](https://github.com/deis/postgres/issues) you find with this software.
-
-
 ## Deploying
 
 To build a dev release of this image, you will also need your own registry, but DockerHub or
