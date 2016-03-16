@@ -10,6 +10,11 @@ puts-error() {
   echo "!!!    $@"
 }
 
+kill-containers() {
+	puts-step "destroying containers"
+	docker rm -f "$MINIO_JOB" "$PG_JOB"
+}
+
 # make sure we are in this dir
 CURRENT_DIR=$(cd $(dirname $0); pwd)
 
@@ -49,6 +54,9 @@ MINIO_JOB=$(docker run -dv $CURRENT_DIR/tmp/aws-admin:/var/run/secrets/deis/mini
 # boot postgres, linking the minio container and setting DEIS_MINIO_SERVICE_HOST and DEIS_MINIO_SERVICE_PORT
 PG_JOB=$(docker run -d --link $MINIO_JOB:minio -e BACKUP_FREQUENCY=1s -e DEIS_MINIO_SERVICE_HOST=minio -e DEIS_MINIO_SERVICE_PORT=9000 -v $CURRENT_DIR/tmp/creds:/var/run/secrets/deis/database/creds -v $CURRENT_DIR/tmp/aws-user:/etc/wal-e.d/env $1)
 
+# kill containers when this script exits or errors out
+trap kill-containers INT TERM
+
 # wait for postgres to boot
 puts-step "sleeping for 90s while postgres is booting..."
 sleep 90s
@@ -70,8 +78,3 @@ if [[ ! "$NUM_BACKUPS" -eq "5" ]]; then
   puts-error "did not find 5 base backups, which is the default (found $NUM_BACKUPS)"
   exit 1
 fi
-
-# success, kill off jobs
-puts-step "destroying containers"
-docker rm -f $MINIO_JOB
-docker rm -f $PG_JOB
