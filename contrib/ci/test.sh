@@ -44,7 +44,7 @@ echo "token" > $CURRENT_DIR/tmp/k8s/token
 echo "cert" > $CURRENT_DIR/tmp/k8s/ca.crt
 
 # boot minio
-MINIO_JOB=$(docker run -dv $CURRENT_DIR/tmp/aws-admin:/var/run/secrets/deis/minio/admin -v $CURRENT_DIR/tmp/aws-user:/var/run/secrets/deis/minio/user -v $CURRENT_DIR/tmp/k8s:/var/run/secrets/kubernetes.io/serviceaccount quay.io/deisci/minio:v2-beta boot server /home/minio/)
+MINIO_JOB=$(docker run -dv $CURRENT_DIR/tmp/aws-admin:/var/run/secrets/deis/minio/admin -v $CURRENT_DIR/tmp/aws-user:/var/run/secrets/deis/minio/user -v $CURRENT_DIR/tmp/k8s:/var/run/secrets/kubernetes.io/serviceaccount quay.io/deisci/minio:canary boot server /home/minio/)
 
 # boot postgres, linking the minio container and setting DEIS_MINIO_SERVICE_HOST and DEIS_MINIO_SERVICE_PORT
 PG_JOB=$(docker run -d --link $MINIO_JOB:minio -e BACKUP_FREQUENCY=1s -e DEIS_MINIO_SERVICE_HOST=minio -e DEIS_MINIO_SERVICE_PORT=9000 -v $CURRENT_DIR/tmp/creds:/var/run/secrets/deis/database/creds -v $CURRENT_DIR/tmp/aws-user:/etc/wal-e.d/env $1)
