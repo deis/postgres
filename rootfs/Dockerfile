@@ -21,7 +21,7 @@ ENV LANG en_US.utf8
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
 
 ENV PG_MAJOR 9.4
-ENV PG_VERSION 9.4.6-1.pgdg80+1
+ENV PG_VERSION 9.4.7-1.pgdg80+1
 
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
 
@@ -48,6 +48,8 @@ RUN apt-get update && apt-get install -y \
 	pv \
 	python \
 	python-dev \
+	libssl-dev \
+	libffi-dev \
 	--no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -56,7 +58,7 @@ RUN curl -sSL https://raw.githubusercontent.com/pypa/pip/7.1.2/contrib/get-pip.p
 
 # install deis/wal-e from the tip of the boto3-upgrade branch
 # NOTE (bacongobbler): we use the commit here so Docker's cache will bust when we make changes upstream
-RUN pip install --disable-pip-version-check --no-cache-dir git+https://github.com/deis/wal-e.git@dfa35c648b1a7b554122312d6c6b592be372e17a
+RUN pip install --disable-pip-version-check --no-cache-dir git+https://github.com/kmala/wal-e.git@5c869f9ecc73b2a73a4b87b41b7b44be086b1e4a
 
 # install python port of daemontools
 RUN pip install --disable-pip-version-check --no-cache-dir envdir
