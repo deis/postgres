@@ -20,6 +20,8 @@ else
     # If you add port 80 to the end of the endpoint_url, boto3 freaks out.
     # God I hate boto3 some days.
     echo "http://$DEIS_MINIO_SERVICE_HOST" > S3_URL
+  elif [ "$DEIS_MINIO_SERVICE_PORT" == "443" ]; then
+    echo "https://$DEIS_MINIO_SERVICE_HOST" > S3_URL
   else
     echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > S3_URL
   fi
