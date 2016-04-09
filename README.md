@@ -1,5 +1,8 @@
 # Deis Postgres
 
+[![Build Status](https://travis-ci.org/deis/postgres.svg?branch=master)](https://travis-ci.org/deis/postgres)
+[![Docker Repository on Quay](https://quay.io/repository/deis/postgres/status "Docker Repository on Quay")](https://quay.io/repository/deis/postgres)
+
 Deis (pronounced DAY-iss) Workflow is an open source Platform as a Service (PaaS) that adds a developer-friendly layer to any [Kubernetes](http://kubernetes.io) cluster, making it easy to deploy and manage applications on your own servers.
 
 For more information about the Deis Workflow, please visit the main project page at https://github.com/deis/workflow.
@@ -78,4 +81,3 @@ limitations under the License.
 [prs]: https://github.com/deis/postgres/pulls
 [issues]: https://github.com/deis/postgres/issues
 [install-k8s]: http://kubernetes.io/gettingstarted/
-
