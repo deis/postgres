@@ -58,7 +58,7 @@ RUN curl -sSL https://raw.githubusercontent.com/pypa/pip/7.1.2/contrib/get-pip.p
 
 # install deis/wal-e from the tip of the boto3-upgrade branch
 # NOTE (bacongobbler): we use the commit here so Docker's cache will bust when we make changes upstream
-RUN pip install --disable-pip-version-check --no-cache-dir git+https://github.com/kmala/wal-e.git@3c1729302db6a38ae32709da24d91a5caa264499
+RUN pip install --disable-pip-version-check --no-cache-dir git+https://github.com/deis/wal-e.git@0eee12665149d8389cda9575b737359d066fa663
 
 # install python port of daemontools
 RUN pip install --disable-pip-version-check --no-cache-dir envdir
