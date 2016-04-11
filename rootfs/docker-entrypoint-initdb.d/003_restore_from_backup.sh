@@ -19,8 +19,6 @@ if [[ $(envdir "$WALE_ENVDIR" wal-e --terse backup-list | wc -l) -gt "1" ]]; the
   gosu postgres pg_ctl -D "$PGDATA" -w stop
   rm -rf "$PGDATA"
   envdir "$WALE_ENVDIR" wal-e backup-fetch "$PGDATA" LATEST
-  chown -R postgres:postgres "$PGDATA"
-  chmod 0700 "$PGDATA"
   cat << EOF > "$PGDATA/postgresql.conf"
 # These settings are initialized by initdb, but they can be changed.
 log_timezone = 'UTC'
@@ -44,6 +42,8 @@ host    all             all             0.0.0.0/0               md5
 EOF
   touch "$PGDATA/pg_ident.conf"
   echo "restore_command = 'envdir /etc/wal-e.d/env wal-e wal-fetch \"%f\" \"%p\"'" >> "$PGDATA/recovery.conf"
+  chown -R postgres:postgres "$PGDATA"
+  chmod 0700 "$PGDATA"
   gosu postgres pg_ctl -D "$PGDATA" \
       -o "-c listen_addresses=''" \
       -t 1200 \
