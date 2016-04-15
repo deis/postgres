@@ -1,3 +1,15 @@
+### v2.0.0-beta1 -> v2.0.0-beta2
+
+#### Features
+
+ - [`07d1a27`](https://github.com/deis/postgres/commit/07d1a271a8013c6943ad9a609d1f1dafa06330e7) _scripts: add CHANGELOG.md and generator script
+ - [`0407dfe`](https://github.com/deis/postgres/commit/0407dfe07c5468aa61c573fdb21d435604862761) README.md: add travis ci and quay.io container badges
+ - [`03ddca5`](https://github.com/deis/postgres/commit/03ddca5780c65fcdbd3c93f3bf8715751f425761) storage: Add support for multiple object storages
+
+#### Maintenance
+
+ - [`b08cab7`](https://github.com/deis/postgres/commit/b08cab75f84ab943281a1b646c9726e4957b7e71) contribi/ci: use minio canary image
+
 ### 2.0.0-alpha -> v2.0.0-beta1
 
 #### Features
