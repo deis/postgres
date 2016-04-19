@@ -1,10 +1,8 @@
-sudo: required
-language: go
-go:
-  - 1.5.1
+language: bash
 branches:
   only:
     - master
+sudo: required
 services:
   - docker
 env:
