@@ -18,9 +18,9 @@ kill-containers() {
 # make sure we are in this dir
 CURRENT_DIR=$(cd $(dirname $0); pwd)
 
-puts-step "creating fake database credentials"
+puts-step "creating fake postgres credentials"
 
-# create fake database credentials
+# create fake postgres credentials
 mkdir -p $CURRENT_DIR/tmp/creds
 echo "testuser" > $CURRENT_DIR/tmp/creds/user
 echo "icanttellyou" > $CURRENT_DIR/tmp/creds/password
@@ -66,11 +66,11 @@ sleep 90s
 # display logs for debugging purposes
 puts-step "displaying minio logs"
 docker logs $MINIO_JOB
-puts-step "displaying database logs"
+puts-step "displaying postgres logs"
 docker logs $PG_JOB
 
 # check if postgres is running
-puts-step "checking if database is running"
+puts-step "checking if postgres is running"
 docker exec $PG_JOB is_running
 
 # check if minio has the 5 backups
@@ -80,3 +80,19 @@ if [[ ! "$NUM_BACKUPS" -eq "5" ]]; then
   puts-error "did not find 5 base backups, which is the default (found $NUM_BACKUPS)"
   exit 1
 fi
+
+# kill off postgres, then reboot and see if it's running after recovering from backups
+puts-step "shutting off postgres, then rebooting to test data recovery"
+docker rm -f $PG_JOB
+PG_JOB=$(docker run -d --link $MINIO_JOB:minio -e BACKUP_FREQUENCY=1s -e DATABASE_STORAGE=minio -e DEIS_MINIO_SERVICE_HOST=minio -e DEIS_MINIO_SERVICE_PORT=9000 -v $CURRENT_DIR/tmp/creds:/var/run/secrets/deis/database/creds -v $CURRENT_DIR/tmp/aws-user:/var/run/secrets/deis/objectstore/creds $1)
+
+# wait for postgres to boot
+puts-step "sleeping for 90s while postgres is recovering from backup..."
+sleep 90s
+
+puts-step "displaying postgres logs"
+docker logs $PG_JOB
+
+# check if postgres is running
+puts-step "checking if postgres is running"
+docker exec $PG_JOB is_running
