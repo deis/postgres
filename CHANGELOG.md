@@ -1,3 +1,14 @@
+### v2.0.0-beta2 -> v2.0.0-beta3
+
+#### Features
+
+ - [`a760511`](https://github.com/deis/postgres/commit/a7605110d392860120ff235d24b1fa0bc9091c3e) contrib: add recovery tests
+ - [`6c0c41f`](https://github.com/deis/postgres/commit/6c0c41ffcad138e2d6ec827678e155e1d5fa41c0) contrib: kill containers on success or failure
+
+#### Maintenance
+
+ - [`beadee5`](https://github.com/deis/postgres/commit/beadee5f54fdf73bdc3f770b619415f72ef4da1d) .travis.yml: Deep six the travis -> jenkins webhooks
+
 ### v2.0.0-beta1 -> v2.0.0-beta2
 
 #### Features
