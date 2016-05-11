@@ -1,3 +1,9 @@
+### v2.0.0-beta3 -> v2.0.0-beta4
+
+#### Documentation
+
+ - [`39db122`](https://github.com/deis/postgres/commit/39db122e29b989c71944b4e6ccf72b5ab7891df1) CHANGELOG.md: update for v2.0.0-beta3
+
 ### v2.0.0-beta2 -> v2.0.0-beta3
 
 #### Features
