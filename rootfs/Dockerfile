@@ -73,4 +73,4 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 5432
 CMD ["postgres"]
 
-ENV DEIS_RELEASE 2.0.0-dev
+ENV WORKFLOW_RELEASE 2.0.0-dev
