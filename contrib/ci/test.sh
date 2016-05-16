@@ -75,9 +75,11 @@ docker exec $PG_JOB is_running
 
 # check if minio has the 5 backups
 puts-step "checking if minio has 5 backups"
-NUM_BACKUPS="$(docker exec $MINIO_JOB ls /home/minio/dbwal/basebackups_005/ | grep json | wc -l)"
+BACKUPS="$(docker exec $MINIO_JOB ls /home/minio/dbwal/basebackups_005/ | grep json)"
+NUM_BACKUPS="$(docker exec $MINIO_JOB ls /home/minio/dbwal/basebackups_005/ | grep -c json)"
 if [[ ! "$NUM_BACKUPS" -eq "5" ]]; then
   puts-error "did not find 5 base backups, which is the default (found $NUM_BACKUPS)"
+  puts-error "$BACKUPS"
   exit 1
 fi
 
