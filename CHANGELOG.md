@@ -1,3 +1,15 @@
+### v2.0.0-beta4 -> v2.0.0-rc1
+
+#### Features
+
+ - [`7900e51`](https://github.com/deis/postgres/commit/7900e5167017c2523efdfa4f0423d380886f35ec) contrib: expose which files were found in backup dir
+
+#### Maintenance
+
+ - [`f502600`](https://github.com/deis/postgres/commit/f502600760b300b68d8cbe7934b45d5b00d2ad41) Dockerfile: Refactor image to use ubuntu-slim
+ - [`11c3830`](https://github.com/deis/postgres/commit/11c38308c3cc4ab0b63acdb05e2690942b9272bc) rootfs/Dockerfile: DEIS_RELEASE -> WORKFLOW_RELEASE
+ - [`77798f5`](https://github.com/deis/postgres/commit/77798f5c86f5b9b61e830523927c3b5a5731e7b3) rootfs/Dockerfile: bump PG_VERSION
+
 ### v2.0.0-beta3 -> v2.0.0-beta4
 
 #### Documentation
