@@ -4,4 +4,4 @@
 set -e
 
 # check if database is running
-gosu postgres pg_ctl status
+gosu postgres psql -l -t >/dev/null 2>&1
