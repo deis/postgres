@@ -3,6 +3,8 @@
 export BACKUP_FREQUENCY=${BACKUP_FREQUENCY:-12h}
 export BACKUPS_TO_RETAIN=${BACKUPS_TO_RETAIN:-5}
 
+until is_running; do sleep 1; done
+
 while true; do
     sleep "$BACKUP_FREQUENCY"
     echo "Performing a base backup..."

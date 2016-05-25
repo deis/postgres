@@ -11,15 +11,10 @@ EOF
 chown -R postgres:postgres "$PGDATA"
 chmod 0700 "$PGDATA"
 
-# reboot the server for wal_level to be set before backing up
-echo "Rebooting postgres to enable archive mode"
-gosu postgres pg_ctl -D "$PGDATA" -w restart
-
 # check if there are any backups -- if so, let's restore
 # we could probably do better than just testing number of lines -- one line is just a heading, meaning no backups
 if [[ $(envdir "$WALE_ENVDIR" wal-e --terse backup-list | wc -l) -gt "1" ]]; then
   echo "Found backups. Restoring from backup..."
-  gosu postgres pg_ctl -D "$PGDATA" -w stop
   rm -rf "$PGDATA"
   envdir "$WALE_ENVDIR" wal-e backup-fetch "$PGDATA" LATEST
   cat << EOF > "$PGDATA/postgresql.conf"
@@ -48,15 +43,7 @@ host    all             all             0.0.0.0/0               md5
 EOF
   touch "$PGDATA/pg_ident.conf"
   echo "restore_command = 'envdir /etc/wal-e.d/env wal-e wal-fetch \"%f\" \"%p\"'" >> "$PGDATA/recovery.conf"
-  chown -R postgres:postgres "$PGDATA"
-  chmod 0700 "$PGDATA"
-  gosu postgres pg_ctl -D "$PGDATA" \
-      -o "-c listen_addresses=''" \
-      -w start
 fi
-
-echo "Performing an initial backup..."
-gosu postgres envdir "$WALE_ENVDIR" wal-e backup-push "$PGDATA"
 
 # ensure $PGDATA has the right permissions
 chown -R postgres:postgres "$PGDATA"

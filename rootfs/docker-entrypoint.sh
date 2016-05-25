@@ -80,21 +80,17 @@ if [ "$1" = 'postgres' ]; then
 		EOSQL
 		echo
 
+		gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
+
 		echo
 		for f in /docker-entrypoint-initdb.d/*; do
 			case "$f" in
 				*.sh)  echo "$0: running $f"; . "$f" ;;
-				*.sql)
-					echo "$0: running $f";
-					psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" < "$f"
-					echo
-					;;
 				*)     echo "$0: ignoring $f" ;;
 			esac
 			echo
 		done
 
-		gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
 		set_listen_addresses '*'
 
 		echo
