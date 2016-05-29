@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import os
-import sys
 
 import boto3
 import botocore
 import json
+import swiftclient
 from botocore.utils import fix_s3_host
 from botocore.client import Config
 from oauth2client.service_account import ServiceAccountCredentials
@@ -30,7 +30,7 @@ if os.getenv('DATABASE_STORAGE') == "s3":
             raise
 
     if not exists:
-    	conn.create_bucket(Bucket=bucket_name)
+        conn.create_bucket(Bucket=bucket_name)
 
 elif os.getenv('DATABASE_STORAGE') == "gcs":
     scopes = ['https://www.googleapis.com/auth/devstorage.full_control']
@@ -46,28 +46,39 @@ elif os.getenv('DATABASE_STORAGE') == "gcs":
     except:
         raise
     if not exists:
-    	client.create_bucket(bucket_name)
+        client.create_bucket(bucket_name)
 
 elif os.getenv('DATABASE_STORAGE') == "azure":
-  block_blob_service = BlockBlobService(account_name=os.getenv('WABS_ACCOUNT_NAME'), account_key=os.getenv('WABS_ACCESS_KEY'))
-  #It doesn't throw an exception if the container exists by default(https://github.com/Azure/azure-storage-python/blob/master/azure/storage/blob/baseblobservice.py#L504).
-  block_blob_service.create_container(bucket_name)
+    block_blob_service = BlockBlobService(account_name=os.getenv('WABS_ACCOUNT_NAME'), account_key=os.getenv('WABS_ACCESS_KEY'))
+    #It doesn't throw an exception if the container exists by default(https://github.com/Azure/azure-storage-python/blob/master/azure/storage/blob/baseblobservice.py#L504).
+    block_blob_service.create_container(bucket_name)
 
-else :
-  conn = boto3.resource('s3', endpoint_url=os.getenv('S3_URL'), config=Config(signature_version='s3v4'))
-  # stop boto3 from automatically changing the endpoint
-  conn.meta.client.meta.events.unregister('before-sign.s3', fix_s3_host)
-  exists = True
-  try:
-      conn.meta.client.head_bucket(Bucket=bucket_name)
-  except botocore.exceptions.ClientError as e:
-      # If a client error is thrown, then check that it was a 404 error.
-      # If it was a 404 error, then the bucket does not exist.
-      error_code = int(e.response['Error']['Code'])
-      if error_code == 404:
-          exists = False
-      else:
-          raise
+elif os.getenv('DATABASE_STORAGE') == "swift":
+    conn = swiftclient.Connection(
+        user=os.getenv('SWIFT_USER'),
+        key=os.getenv('SWIFT_PASSWORD'),
+        authurl=os.getenv('SWIFT_AUTHURL'),
+        auth_version=os.getenv('SWIFT_AUTH_VERSION'),
+        tenant_name=os.getenv('SWIFT_TENANT')
+    )
+    # swift also does not throw exception if container already exists.
+    conn.put_container(os.getenv('BUCKET_NAME'))
 
-  if not exists:
-  	conn.create_bucket(Bucket=bucket_name)
+else:
+    conn = boto3.resource('s3', endpoint_url=os.getenv('S3_URL'), config=Config(signature_version='s3v4'))
+    # stop boto3 from automatically changing the endpoint
+    conn.meta.client.meta.events.unregister('before-sign.s3', fix_s3_host)
+    exists = True
+    try:
+        conn.meta.client.head_bucket(Bucket=bucket_name)
+    except botocore.exceptions.ClientError as e:
+        # If a client error is thrown, then check that it was a 404 error.
+        # If it was a 404 error, then the bucket does not exist.
+        error_code = int(e.response['Error']['Code'])
+        if error_code == 404:
+            exists = False
+        else:
+            raise
+
+    if not exists:
+        conn.create_bucket(Bucket=bucket_name)
