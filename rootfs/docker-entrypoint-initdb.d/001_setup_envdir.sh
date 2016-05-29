@@ -40,4 +40,23 @@ elif [ "$DATABASE_STORAGE" == "azure" ]; then
   echo $WABS_ACCESS_KEY > WABS_ACCESS_KEY
   echo "wabs://$BUCKET_NAME" > WALE_WABS_PREFIX
   echo $BUCKET_NAME > BUCKET_NAME
+elif [ "$DATABASE_STORAGE" == "swift" ]; then
+  SWIFT_USER=$(cat /var/run/secrets/deis/objectstore/creds/username)
+  SWIFT_PASSWORD=$(cat /var/run/secrets/deis/objectstore/creds/password)
+  SWIFT_TENANT=$(cat /var/run/secrets/deis/objectstore/creds/tenant)
+  SWIFT_AUTHURL=$(cat /var/run/secrets/deis/objectstore/creds/authurl)
+  if [[ -e /var/run/secrets/deis/objectstore/creds/auth_version ]]; then
+    SWIFT_AUTH_VERSION=$(cat /var/run/secrets/deis/objectstore/creds/auth_version)
+  else
+    SWIFT_AUTH_VERSION=2
+  fi
+  BUCKET_NAME=$(cat /var/run/secrets/deis/objectstore/creds/database-container)
+  # set defaults for variables that we can guess at
+  echo $SWIFT_USER > SWIFT_USER
+  echo $SWIFT_PASSWORD > SWIFT_PASSWORD
+  echo $SWIFT_TENANT > SWIFT_TENANT
+  echo $SWIFT_AUTHURL > SWIFT_AUTHURL
+  echo $SWIFT_AUTH_VERSION > SWIFT_AUTH_VERSION
+  echo "swift://$BUCKET_NAME" > WALE_SWIFT_PREFIX
+  echo $BUCKET_NAME > BUCKET_NAME
 fi
