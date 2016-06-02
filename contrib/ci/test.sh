@@ -77,8 +77,10 @@ docker exec $PG_JOB is_running
 puts-step "checking if minio has 5 backups"
 BACKUPS="$(docker exec $MINIO_JOB ls /home/minio/dbwal/basebackups_005/ | grep json)"
 NUM_BACKUPS="$(docker exec $MINIO_JOB ls /home/minio/dbwal/basebackups_005/ | grep -c json)"
-if [[ ! "$NUM_BACKUPS" -eq "5" ]]; then
-  puts-error "did not find 5 base backups, which is the default (found $NUM_BACKUPS)"
+# The default number of backups is 5. If a backup is currently in progress, there could be 6 and
+# for the purposes of this test, we consider that acceptable.
+if [[ ! "$NUM_BACKUPS" -eq "5" && ! "$NUM_BACKUPS" -eq "6" ]]; then
+  puts-error "did not find 5 or 6 base backups, 5 is the default, but 6 may exist if a backup is currently in progress (found $NUM_BACKUPS)"
   puts-error "$BACKUPS"
   exit 1
 fi
