@@ -48,10 +48,10 @@ EOF
       -o "-c listen_addresses=''" \
       -t 1200 \
       -w start
-else
-  echo "No backups found. Performing an initial backup..."
-  gosu postgres envdir "$WALE_ENVDIR" wal-e backup-push "$PGDATA"
 fi
+
+echo "Performing an initial backup..."
+gosu postgres envdir "$WALE_ENVDIR" wal-e backup-push "$PGDATA"
 
 # ensure $PGDATA has the right permissions
 chown -R postgres:postgres "$PGDATA"
