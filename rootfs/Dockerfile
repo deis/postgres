@@ -45,7 +45,7 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 	&& mkdir -p /var/run/postgresql \
 	&& chown -R postgres /var/run/postgresql \
 	&& curl -sSL https://raw.githubusercontent.com/pypa/pip/7.1.2/contrib/get-pip.py | python - \
-	&& pip install --disable-pip-version-check --no-cache-dir git+https://github.com/deis/wal-e.git@0eee12665149d8389cda9575b737359d066fa663 \
+	&& pip install --disable-pip-version-check --no-cache-dir git+https://github.com/deis/wal-e.git@380821a6c4ea4f98a244680d7c6c5b04b8c694b3 \
 	&& mkdir -p $WALE_ENVDIR \
 	&& pip install --disable-pip-version-check --no-cache-dir envdir \
 	&& apt-get remove -y --auto-remove --purge \
