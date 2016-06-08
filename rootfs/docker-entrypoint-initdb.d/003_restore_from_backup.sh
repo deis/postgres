@@ -2,6 +2,9 @@
 
 cat << EOF >> "$PGDATA/postgresql.conf"
 wal_level = archive
+archive_mode = on
+archive_command = 'envdir "${WALE_ENVDIR}" wal-e wal-push %p'
+archive_timeout = 60
 EOF
 
 # ensure $PGDATA has the right permissions
@@ -28,6 +31,9 @@ lc_numeric = 'C'      # locale for number formatting
 lc_time = 'C'       # locale for time formatting
 default_text_search_config = 'pg_catalog.english'
 wal_level = archive
+archive_mode = on
+archive_command = 'envdir "${WALE_ENVDIR}" wal-e wal-push %p'
+archive_timeout = 60
 listen_addresses = '*'
 EOF
   cat << EOF > "$PGDATA/pg_hba.conf"
