@@ -1,3 +1,18 @@
+### v2.0.0-rc2 -> v2.0.0
+
+#### Fixes
+
+- [`db4cd9d`](https://github.com/deis/postgres/commit/db4cd9db4df12489ab0d9ff27094322e889ed871) rootfs: always perform an initial backup
+- [`7c89a3c`](https://github.com/deis/postgres/commit/7c89a3c290e845fe909faad835b8410ce8bbe6b9) rootfs: enable archive_mode before initial boot
+
+#### Documentation
+
+- [`a06057d`](https://github.com/deis/postgres/commit/a06057df0589f611f30089f0f6ddceec8013416e) CHANGELOG.md: add entry for v2.0.0-rc2
+
+#### Maintenance
+
+- [`779cef7`](https://github.com/deis/postgres/commit/779cef742e4e92d09a18eaad5803640a39506e8f) README.md: remove beta status
+
 ### v2.0.0-rc1 -> v2.0.0-rc2
 
 ### v2.0.0-beta4 -> v2.0.0-rc1
