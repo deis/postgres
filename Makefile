@@ -23,7 +23,7 @@ all: docker-build docker-push
 # We also alter the RC file to set the image name.
 docker-build:
 	docker build --rm -t ${IMAGE} rootfs
-	docker tag -f ${IMAGE} ${MUTABLE_IMAGE}
+	docker tag ${IMAGE} ${MUTABLE_IMAGE}
 
 test: test-style test-unit test-functional
 
