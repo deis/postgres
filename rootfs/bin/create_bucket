@@ -11,7 +11,14 @@ from botocore.client import Config
 from oauth2client.service_account import ServiceAccountCredentials
 from gcloud.storage.client import Client
 from gcloud import exceptions
-from azure.storage.blob import BlockBlobService
+try:
+    # New module location sometime after Azure SDK v1.0.
+    #
+    # See
+    # https://github.com/Azure/azure-sdk-for-python/blob/master/ChangeLog.txt
+    from azure.storage.blob import BlobService
+except ImportError:
+    from azure.storage import BlobService
 
 bucket_name = os.getenv('BUCKET_NAME')
 
@@ -49,9 +56,9 @@ elif os.getenv('DATABASE_STORAGE') == "gcs":
     	client.create_bucket(bucket_name)
 
 elif os.getenv('DATABASE_STORAGE') == "azure":
-  block_blob_service = BlockBlobService(account_name=os.getenv('WABS_ACCOUNT_NAME'), account_key=os.getenv('WABS_ACCESS_KEY'))
+  blob_service = BlobService(account_name=os.getenv('WABS_ACCOUNT_NAME'), account_key=os.getenv('WABS_ACCESS_KEY'))
   #It doesn't throw an exception if the container exists by default(https://github.com/Azure/azure-storage-python/blob/master/azure/storage/blob/baseblobservice.py#L504).
-  block_blob_service.create_container(bucket_name)
+  blob_service.create_container(bucket_name)
 
 else :
   conn = boto3.resource('s3', endpoint_url=os.getenv('S3_URL'), config=Config(signature_version='s3v4'))
