@@ -48,7 +48,7 @@ This project has a [Makefile](https://github.com/deis/postgres/blob/master/Makef
   * If this is [Docker Hub](https://hub.docker.com/), leave this variable empty
   * Otherwise, ensure it has a trailing `/`. For example, if you're using [Quay.io](https://quay.io), use `quay.io/`
 * `IMAGE_PREFIX` - The organization in the Docker repository. This defaults to `deis`, but if you don't have access to that organization, set this to one you have push access to.
-* `SHORT_NAME` (optional) - The name of the image. This defaults to `controller`
+* `SHORT_NAME` (optional) - The name of the image. This defaults to `postgres`
 * `VERSION` (optional) - The tag of the Docker image. This defaults to the current Git SHA (the output of `git rev-parse --short HEAD`)
 
 Assuming you have these variables set correctly, run `make docker-build` to build the new image, and `make docker-push` to push it. Here is an example command that would push to `quay.io/arschles/postgres:devel`:
