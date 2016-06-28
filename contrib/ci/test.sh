@@ -77,8 +77,10 @@ docker exec $PG_JOB is_running
 puts-step "checking if minio has 5 backups"
 BACKUPS="$(docker exec $MINIO_JOB ls /home/minio/dbwal/basebackups_005/ | grep json)"
 NUM_BACKUPS="$(docker exec $MINIO_JOB ls /home/minio/dbwal/basebackups_005/ | grep -c json)"
-if [[ ! "$NUM_BACKUPS" -eq "5" ]]; then
-  puts-error "did not find 5 base backups, which is the default (found $NUM_BACKUPS)"
+# NOTE (bacongobbler): the BACKUP_FREQUENCY is only 1 second, so we could technically be checking
+# in the middle of a backup. Instead of failing, let's consider N+1 backups an acceptable case
+if [[ ! "$NUM_BACKUPS" -eq "5" && ! "$NUM_BACKUPS" -eq "6" ]]; then
+  puts-error "did not find 5 or 6 base backups. 5 is the default, but 6 may exist if a backup is currently in progress (found $NUM_BACKUPS)"
   puts-error "$BACKUPS"
   exit 1
 fi
