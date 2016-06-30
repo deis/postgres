@@ -59,5 +59,3 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 
 CMD ["/docker-entrypoint.sh", "postgres"]
 EXPOSE 5432
-
-ENV WORKFLOW_RELEASE 2.0.0
