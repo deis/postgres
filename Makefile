@@ -36,4 +36,7 @@ test-unit:
 test-functional:
 	contrib/ci/test.sh ${IMAGE}
 
+test-functional-swift:
+	contrib/ci/test-swift.sh ${IMAGE}
+
 .PHONY: all docker-build docker-push test
