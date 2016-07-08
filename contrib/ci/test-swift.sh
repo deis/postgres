@@ -2,116 +2,76 @@
 
 set -eof pipefail
 
-# kill containers when this script exits or errors out
-trap exit-script INT TERM
-
-puts-step() {
-  echo "-----> $@"
-}
-
-puts-error() {
-  echo "!!!    $@"
-}
-
-exit-script() {
-  kill-containers
-  kill-swift
-}
-
-kill-containers() {
-  # docker containers
-  puts-step "destroying postgres container"
-  docker rm -f deis-postgres-swift
-}
-
-kill-swift() {
-  # swift containers
-  puts-step "cleaning swift"
-  swift delete deis-swift-test > /dev/null
-}
+TEST_ROOT=$(dirname "${BASH_SOURCE}")/
+source "${TEST_ROOT}/test.sh"
 
 # make sure we are in this dir
 CURRENT_DIR=$(cd $(dirname $0); pwd)
 
-puts-step "creating fake postgres credentials"
-
-# create fake postgres credentials
-mkdir -p $CURRENT_DIR/tmp/creds
-echo "testuser" > $CURRENT_DIR/tmp/creds/user
-echo "icanttellyou" > $CURRENT_DIR/tmp/creds/password
+create-postgres-creds
 
 puts-step "fetching openstack credentials"
-
-# check if openstack creds are not already in environment
-if [[ -z $OS_USERNAME ]]; then
-  echo "it appears that you have not loaded your openstack credentials into your environment"
-  exit 1
-fi
 
 # turn creds into something that we can use.
 mkdir -p $CURRENT_DIR/tmp/swift
 
 # guess which value to use for tenant:
-TENANT=${OS_TENANT_NAME:-$OS_PROJECT_NAME}
-TENANT=${TENANT:-$OS_USERNAME}
+TENANT=""
 
-echo ${OS_USERNAME} > $CURRENT_DIR/tmp/swift/username
-echo ${OS_PASSWORD} > $CURRENT_DIR/tmp/swift/password
+echo "test:tester" > $CURRENT_DIR/tmp/swift/username
+echo "testing" > $CURRENT_DIR/tmp/swift/password
 echo ${TENANT} > $CURRENT_DIR/tmp/swift/tenant
-echo ${OS_AUTH_URL} > $CURRENT_DIR/tmp/swift/authurl
+echo "http://swift:8080/auth/v1.0" > $CURRENT_DIR/tmp/swift/authurl
+echo "1" > $CURRENT_DIR/tmp/swift/authversion
 echo "deis-swift-test" > $CURRENT_DIR/tmp/swift/database-container
 
+# kill containers when this script exits or errors out
+trap 'kill-container $SWIFT_DATA' INT TERM
+# boot swift
+SWIFT_DATA=$(docker run -v /srv --name SWIFT_DATA busybox)
+
+# kill containers when this script exits or errors out
+trap 'kill-container $SWIFT_JOB' INT TERM
+SWIFT_JOB=$(docker run --name onlyone --hostname onlyone -d -p 12345:8080 --volumes-from SWIFT_DATA -t deis/swift-onlyone:git-8516d23)
+
+
 # postgres container command
-PG_CMD="docker run -d -e BACKUP_FREQUENCY=3s \
+PG_CMD="docker run -d --link $SWIFT_JOB:swift -e BACKUP_FREQUENCY=3s \
          -e DATABASE_STORAGE=swift \
          -v $CURRENT_DIR/tmp/creds:/var/run/secrets/deis/database/creds \
          -v $CURRENT_DIR/tmp/swift:/var/run/secrets/deis/objectstore/creds \
          $1"
 
-# boot postgres
-PG_JOB=$(${PG_CMD})
-
-# wait for postgres to boot
-puts-step "sleeping for 90s while postgres is booting..."
-sleep 90s
+# kill containers when this script exits or errors out
+trap 'kill-container $PG_JOB' INT TERM
+start-postgres "$PG_CMD"
 
 # display logs for debugging purposes
-puts-step "displaying postgres logs"
-docker logs $PG_JOB
+puts-step "displaying swift logs"
+docker logs $SWIFT_JOB
 
-# check if postgres is running
-puts-step "checking if postgres is running"
-docker exec $PG_JOB is_running
+check-postgres $PG_JOB
 
 # check if swift has some backups ... 3 ?
 puts-step "checking if swift has at least 3 backups"
 
-BACKUPS="$(swift list deis-swift-test | grep basebackups_005 | grep json)"
-NUM_BACKUPS="$(swift list deis-swift-test | grep basebackups_005 | grep -c json)"
-if [[ ! "$NUM_BACKUPS" -gt "3" ]]; then
-  puts-error "did not find at least 3 base backups, which is the default (found $NUM_BACKUPS)"
+BACKUPS="$(swift -A http://127.0.0.1:12345/auth/v1.0 -U test:tester -K testing list deis-swift-test | grep basebackups_005 | grep json)"
+NUM_BACKUPS="$(swift -A http://127.0.0.1:12345/auth/v1.0 -U test:tester -K testing list deis-swift-test | grep basebackups_005 | grep -c json)"
+# NOTE (bacongobbler): the BACKUP_FREQUENCY is only 1 second, so we could technically be checking
+# in the middle of a backup. Instead of failing, let's consider N+1 backups an acceptable case
+if [[ ! "$NUM_BACKUPS" -eq "5" && ! "$NUM_BACKUPS" -eq "6" ]]; then
+  puts-error "did not find 5 or 6 base backups. 5 is the default, but 6 may exist if a backup is currently in progress (found $NUM_BACKUPS)"
   puts-error "$BACKUPS"
-  exit-script
   exit 1
 fi
 
-puts-step "found $NUM_BACKUPS"
-
 # kill off postgres, then reboot and see if it's running after recovering from backups
 puts-step "shutting off postgres, then rebooting to test data recovery"
-docker rm -f $PG_JOB
-PG_JOB=$(${PG_CMD})
+kill-container $PG_JOB
 
-# wait for postgres to boot
-puts-step "sleeping for 90s while postgres is recovering from backup..."
-sleep 90s
+start-postgres "$PG_CMD"
 
-puts-step "displaying postgres logs"
-docker logs $PG_JOB
-
-# check if postgres is running
-puts-step "checking if postgres is running"
-docker exec $PG_JOB is_running
+check-postgres $PG_JOB
 
 puts-step "tests PASSED!"
 exit 0
