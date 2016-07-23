@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-until psql -l -t >/dev/null 2>&1; do sleep 1; done
-
 while true; do
     if [[ ! -f "$PGDATA/recovery.conf" ]] ; then
+        until psql -l -t >/dev/null 2>&1; do sleep 1; done
+
         # Push a fresh backup so we have a new recovery baseline
         echo "Performing an initial backup..."
         envdir "$WALE_ENVDIR" wal-e backup-push "$PGDATA"
