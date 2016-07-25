@@ -1,7 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # fail fast
 set -e
 
-# check if database is running
-gosu postgres pg_ctl status
+if [[ -f "$PGDATA/recovery.conf" ]]; then
+  # We don't need to call psql for checking in the recovery mode.
+  # As WAL-E calls psql internally.
+
+  # Recovering...not in service.
+  exit 1
+else
+  # check if database is running
+  gosu postgres psql -l -t >/dev/null 2>&1
+fi

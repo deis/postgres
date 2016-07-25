@@ -9,6 +9,8 @@ while true; do
     if [[ -f "$PGDATA/recovery.conf" ]] ; then
         echo "Database is currently recovering from a backup. Will try again next loop..."
     else
+        until psql -l -t >/dev/null 2>&1; do sleep 1; done
+
         # perform a backup
         envdir "$WALE_ENVDIR" wal-e backup-push "$PGDATA"
         # only retain the latest BACKUPS_TO_RETAIN backups
