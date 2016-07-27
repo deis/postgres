@@ -33,7 +33,7 @@ test-style:
 test-unit:
 	@echo "Implement functional tests in _tests directory"
 
-test-functional: test-functional-swift test-functional-minio
+test-functional: test-functional-minio
 
 test-functional-minio:
 	contrib/ci/test-minio.sh ${IMAGE}
