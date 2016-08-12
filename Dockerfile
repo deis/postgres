@@ -53,7 +53,7 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man /usr/share/doc
 
-COPY . /
+COPY rootfs /
 ENV WALE_ENVDIR=/etc/wal-e.d/env
 RUN mkdir -p $WALE_ENVDIR
 
