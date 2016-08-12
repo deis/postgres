@@ -2,7 +2,7 @@ FROM quay.io/deis/base:0.2.0
 
 ENV LANG=en_US.utf8 \
 	PG_MAJOR=9.4 \
-	PG_VERSION=9.4.8-1.pgdg80+1 \
+	PG_VERSION=9.4.9-1.pgdg80+1 \
 	PGDATA=/var/lib/postgresql/data \
 	WALE_ENVDIR=/etc/wal-e.d/env
 
