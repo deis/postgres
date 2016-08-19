@@ -3,8 +3,7 @@ FROM quay.io/deis/base:0.2.0
 ENV LANG=en_US.utf8 \
 	PG_MAJOR=9.4 \
 	PG_VERSION=9.4.9-1.pgdg80+1 \
-	PGDATA=/var/lib/postgresql/data \
-	WALE_ENVDIR=/etc/wal-e.d/env
+	PGDATA=/var/lib/postgresql/data
 
 # Set this separately from those above since it depends on one of them
 ENV PATH=/usr/lib/postgresql/$PG_MAJOR/bin:$PATH
@@ -15,8 +14,6 @@ RUN adduser --system \
 	--disabled-password \
 	--group \
 	postgres
-
-COPY . /
 
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
 	&& curl -L -o /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.2/gosu-$(dpkg --print-architecture)" \
@@ -46,7 +43,6 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 	&& chown -R postgres /var/run/postgresql \
 	&& curl -sSL https://raw.githubusercontent.com/pypa/pip/7.1.2/contrib/get-pip.py | python - \
 	&& pip install --disable-pip-version-check --no-cache-dir git+https://github.com/deis/wal-e.git@380821a6c4ea4f98a244680d7c6c5b04b8c694b3 \
-	&& mkdir -p $WALE_ENVDIR \
 	&& pip install --disable-pip-version-check --no-cache-dir envdir \
 	&& apt-get remove -y --auto-remove --purge \
 		gcc \
@@ -56,6 +52,10 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 		python-dev \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/man /usr/share/doc
+
+COPY . /
+ENV WALE_ENVDIR=/etc/wal-e.d/env
+RUN mkdir -p $WALE_ENVDIR
 
 CMD ["/docker-entrypoint.sh", "postgres"]
 EXPOSE 5432
