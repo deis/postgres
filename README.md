@@ -30,7 +30,7 @@ In order to develop and test this component in a Deis cluster, you'll need the f
 * [GNU Make](https://www.gnu.org/software/make/)
 * [Docker](https://www.docker.com/) installed, configured and running
 * A working Kubernetes cluster and `kubectl` installed and configured to talk to the cluster
-	* If you don't have this setup, please see [the installation instructions][install-k8s]
+ * If you don't have this setup, please see [the Kubernetes documentation][k8s-docs]
 
 ## Testing Your Code
 
@@ -76,6 +76,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-[prs]: https://github.com/deis/postgres/pulls
+
 [issues]: https://github.com/deis/postgres/issues
-[install-k8s]: http://kubernetes.io/gettingstarted/
+[k8s-docs]: http://kubernetes.io/docs
+[prs]: https://github.com/deis/postgres/pulls
