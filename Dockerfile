@@ -1,4 +1,4 @@
-FROM quay.io/deis/base:0.2.0
+FROM quay.io/deis/base:v0.3.4
 
 ENV LANG=en_US.utf8 \
 	PG_MAJOR=9.4 \
@@ -25,9 +25,10 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 	&& apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 \
 	&& echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list \
 	&& apt-get update \
-	&& apt-get install -y postgresql-common \
+	&& export DEBIAN_FRONTEND=noninteractive \
+	&& apt-get install -y postgresql-common util-linux \
 	&& sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf \
-	&& apt-get install -y \
+	&& apt-get install -y --no-install-recommends \
 		gcc \
 		git \
 		libssl-dev \
@@ -38,7 +39,6 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 		pv \
 		python \
 		python-dev \
-		--no-install-recommends \
 	&& mkdir -p /var/run/postgresql \
 	&& chown -R postgres /var/run/postgresql \
 	&& curl -sSL https://raw.githubusercontent.com/pypa/pip/7.1.2/contrib/get-pip.py | python - \
