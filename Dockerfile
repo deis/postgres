@@ -15,7 +15,7 @@ RUN adduser --system \
 	--group \
 	postgres
 
-RUN buildDeps='gcc git libffi-dev libssl-dev python-dev python-pip python-wheel'; \
+RUN buildDeps='gcc git libffi-dev libssl-dev python-dev python-pip python-wheel' && \
     localedef -i en_US -c -f UTF-8 -A /etc/locale.alias en_US.UTF-8 && \
     export DEBIAN_FRONTEND=noninteractive && \
 	apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 && \
@@ -44,8 +44,10 @@ RUN buildDeps='gcc git libffi-dev libssl-dev python-dev python-pip python-wheel'
     apt-get autoremove -y && \
     apt-get clean -y && \
     # package up license files if any by appending to existing tar
-    COPYRIGHT_TAR='/usr/share/copyrights.tar'; \
-    gunzip $COPYRIGHT_TAR.gz; tar -rf $COPYRIGHT_TAR /usr/share/doc/*/copyright; gzip $COPYRIGHT_TAR && \
+    COPYRIGHT_TAR='/usr/share/copyrights.tar' && \
+    gunzip $COPYRIGHT_TAR.gz && \
+    tar -rf $COPYRIGHT_TAR /usr/share/doc/*/copyright && \
+    gzip $COPYRIGHT_TAR && \
     rm -rf \
         /usr/share/doc \
         /usr/share/man \
