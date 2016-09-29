@@ -2,7 +2,7 @@ FROM quay.io/deis/base:v0.3.4
 
 ENV LANG=en_US.utf8 \
     PG_MAJOR=9.4 \
-    PG_VERSION=9.4.9-1.pgdg80+1 \
+    PG_VERSION=9.4.9-1.pgdg16.04+1 \
     PGDATA=/var/lib/postgresql/data
 
 # Set this separately from those above since it depends on one of them
@@ -19,7 +19,7 @@ RUN buildDeps='gcc git libffi-dev libssl-dev python-dev python-pip python-wheel'
     localedef -i en_US -c -f UTF-8 -A /etc/locale.alias en_US.UTF-8 && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 && \
-    echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list && \
+    echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         $buildDeps \
