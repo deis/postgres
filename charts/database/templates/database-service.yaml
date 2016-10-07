@@ -1,0 +1,14 @@
+{{- if eq .Values.global.database_location "on-cluster" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: deis-database
+  labels:
+    heritage: deis
+spec:
+  ports:
+    - name: postgres
+      port: 5432
+  selector:
+    app: deis-database
+{{- end }}

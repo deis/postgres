@@ -1,0 +1,60 @@
+{{- if eq .Values.global.database_location "on-cluster" }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deis-database
+  labels:
+    heritage: deis
+  annotations:
+    component.deis.io/version: {{ .Values.docker_tag }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: deis-database
+  template:
+    metadata:
+      labels:
+        app: deis-database
+    spec:
+      serviceAccount: deis-database
+      containers:
+        - name: deis-database
+          image: quay.io/{{.Values.org}}/postgres:{{.Values.docker_tag}}
+          imagePullPolicy: {{.Values.pull_policy}}
+          ports:
+            - containerPort: 5432
+{{- if or (.Values.limits_cpu) (.Values.limits_memory)}}
+          resources:
+            limits:
+{{- if (.Values.limits_cpu) }}
+              cpu: {{.Values.limits_cpu}}
+{{- end}}
+{{- if (.Values.limits_memory) }}
+              memory: {{.Values.limits_memory}}
+{{- end}}
+{{- end}}
+          env:
+            - name: DATABASE_STORAGE
+              value: "{{.Values.global.storage}}"
+          readinessProbe:
+            exec:
+              command:
+                - is_running
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+          volumeMounts:
+            - name: database-creds
+              mountPath: /var/run/secrets/deis/database/creds
+            - name: objectstore-creds
+              mountPath: /var/run/secrets/deis/objectstore/creds
+      volumes:
+        - name: database-creds
+          secret:
+            secretName: database-creds
+        - name: objectstore-creds
+          secret:
+            secretName: database-storage-keyfile
+{{- end }}
