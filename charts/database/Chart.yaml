@@ -1,0 +1,10 @@
+name: database
+home: https://github.com/deis/postgres
+version: <Will be populated by the ci before publishing the chart>
+description: A PostgreSQL database used by Deis Workflow.
+keywords:
+  - database
+  - postgres
+maintainers:
+  - name: Deis Team
+    email: engineering@deis.com
