@@ -39,6 +39,8 @@ spec:
           env:
             - name: DATABASE_STORAGE
               value: "{{.Values.global.storage}}"
+            - name: PGCTLTIMEOUT
+              value: "{{.Values.postgres.timeout}}"
           readinessProbe:
             exec:
               command:
