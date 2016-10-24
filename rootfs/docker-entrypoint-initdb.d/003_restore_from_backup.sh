@@ -52,7 +52,6 @@ EOF
   chmod 0700 "$PGDATA"
   gosu postgres pg_ctl -D "$PGDATA" \
       -o "-c listen_addresses=''" \
-      -t 1200 \
       -w start
 fi
 
