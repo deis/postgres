@@ -56,5 +56,5 @@ spec:
             secretName: database-creds
         - name: objectstore-creds
           secret:
-            secretName: database-storage-keyfile
+            secretName: objectstorage-keyfile
 {{- end }}
