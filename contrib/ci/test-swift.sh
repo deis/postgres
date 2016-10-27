@@ -38,6 +38,7 @@ SWIFT_JOB=$(docker run --name onlyone --hostname onlyone -d -p 12345:8080 --volu
 # postgres container command
 PG_CMD="docker run -d --link $SWIFT_JOB:swift -e BACKUP_FREQUENCY=3s \
          -e DATABASE_STORAGE=swift \
+         -e PGCTLTIMEOUT=1200 \
          -v $CURRENT_DIR/tmp/creds:/var/run/secrets/deis/database/creds \
          -v $CURRENT_DIR/tmp/swift:/var/run/secrets/deis/objectstore/creds \
          $1"
