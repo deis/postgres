@@ -41,8 +41,8 @@ RUN buildDeps='gcc git libffi-dev libssl-dev python3-dev python3-pip python3-whe
     pip install --disable-pip-version-check --no-cache-dir \
         envdir==0.7 \
         wal-e[aws,azure,google,swift]==v1.0.1 && \
-    # "upgrade" boto to 2.42.0 + the patch to fix minio connections
-    pip install --disable-pip-version-check --no-cache-dir --upgrade git+https://github.com/deis/boto@c1e71a737bef48f934b6108c06a84e483173a2da && \
+    # "upgrade" boto to 2.43.0 + the patch to fix minio connections
+    pip install --disable-pip-version-check --no-cache-dir --upgrade git+https://github.com/deis/boto@d5d32ec42c99e9ecd030f8a4873adcda0070153d && \
     # cleanup
     apt-get purge -y --auto-remove $buildDeps && \
     apt-get autoremove -y && \
