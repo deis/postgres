@@ -55,8 +55,8 @@ check-postgres $PG_JOB
 # check if swift has some backups ... 3 ?
 puts-step "checking if swift has at least 3 backups"
 
-BACKUPS="$(swift -A http://127.0.0.1:12345/auth/v1.0 -U test:tester -K testing list deis-swift-test | grep basebackups_005 | grep json)"
-NUM_BACKUPS="$(swift -A http://127.0.0.1:12345/auth/v1.0 -U test:tester -K testing list deis-swift-test | grep basebackups_005 | grep -c json)"
+BACKUPS="$(docker exec $SWIFT_JOB swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list deis-swift-test | grep basebackups_005 | grep json)"
+NUM_BACKUPS="$(docker exec $SWIFT_JOB swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list deis-swift-test | grep basebackups_005 | grep -c json)"
 # NOTE (bacongobbler): the BACKUP_FREQUENCY is only 1 second, so we could technically be checking
 # in the middle of a backup. Instead of failing, let's consider N+1 backups an acceptable case
 if [[ ! "$NUM_BACKUPS" -eq "5" && ! "$NUM_BACKUPS" -eq "6" ]]; then
