@@ -10,3 +10,4 @@ postgres:
   password: "database password"
   host: "database host"
   port: "database port"
+  timeout: "1200"
