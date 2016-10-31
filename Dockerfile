@@ -2,7 +2,7 @@ FROM quay.io/deis/base:v0.3.4
 
 ENV LANG=en_US.utf8 \
     PG_MAJOR=9.4 \
-    PG_VERSION=9.4.9-1.pgdg16.04+1 \
+    PG_VERSION=9.4.10-1.pgdg16.04+1 \
     PGDATA=/var/lib/postgresql/data
 
 # Set this separately from those above since it depends on one of them
@@ -15,7 +15,7 @@ RUN adduser --system \
     --group \
     postgres
 
-RUN buildDeps='gcc git libffi-dev libssl-dev python-dev python-pip python-wheel' && \
+RUN buildDeps='gcc git libffi-dev libssl-dev python3-dev python3-pip python3-wheel' && \
     localedef -i en_US -c -f UTF-8 -A /etc/locale.alias en_US.UTF-8 && \
     export DEBIAN_FRONTEND=noninteractive && \
     apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 && \
@@ -28,17 +28,21 @@ RUN buildDeps='gcc git libffi-dev libssl-dev python-dev python-pip python-wheel'
         postgresql-$PG_MAJOR=$PG_VERSION \
         postgresql-contrib-$PG_MAJOR=$PG_VERSION \
         pv \
-        python \
+        python3 \
         postgresql-common \
         util-linux \
         # swift package needs pkg_resources and setuptools
-        python-pkg-resources \
-        python-setuptools && \
+        python3-pkg-resources \
+        python3-setuptools && \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
+    ln -sf /usr/bin/pip3 /usr/bin/pip && \
     mkdir -p /run/postgresql && \
     chown -R postgres /run/postgresql && \
-    pip install --disable-pip-version-check --no-cache-dir git+https://github.com/deis/wal-e.git@380821a6c4ea4f98a244680d7c6c5b04b8c694b3 \
-                                                           google-gax===0.12.5 \
-                                                           envdir && \
+    pip install --disable-pip-version-check --no-cache-dir \
+        envdir==0.7 \
+        wal-e[aws,azure,google,swift]==v1.0.1 && \
+    # "upgrade" boto to 2.43.0 + the patch to fix minio connections
+    pip install --disable-pip-version-check --no-cache-dir --upgrade git+https://github.com/deis/boto@d5d32ec42c99e9ecd030f8a4873adcda0070153d && \
     # cleanup
     apt-get purge -y --auto-remove $buildDeps && \
     apt-get autoremove -y && \
