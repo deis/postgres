@@ -2,50 +2,56 @@
 
 import os
 
-import boto
+import boto3
+import botocore
 import json
 import swiftclient
-from boto import config as botoconfig
-from boto.s3.connection import S3Connection, OrdinaryCallingFormat
+from botocore.utils import fix_s3_host
+from botocore.client import Config
 from oauth2client.service_account import ServiceAccountCredentials
 from gcloud.storage.client import Client
 from gcloud import exceptions
-from azure.storage.blob import BlobService
-
-def bucket_exists(conn, name):
-    bucket = conn.lookup(name)
-    if not bucket:
-        return False
-    return True
+from azure.storage.blob import BlockBlobService
 
 bucket_name = os.getenv('BUCKET_NAME')
 
 if os.getenv('DATABASE_STORAGE') == "s3":
-    conn = boto.connect_s3()
+    conn = boto3.resource('s3')
+    exists = True
+    try:
+        conn.meta.client.head_bucket(Bucket=bucket_name)
+    except botocore.exceptions.ClientError as e:
+        # If a client error is thrown, then check that it was a 404 error.
+        # If it was a 404 error, then the bucket does not exist.
+        error_code = int(e.response['Error']['Code'])
+        if error_code == 404:
+            exists = False
+        else:
+            raise
 
-    if not bucket_exists(conn, bucket_name):
-        conn.create_bucket(bucket_name)
+    if not exists:
+        conn.create_bucket(Bucket=bucket_name)
 
 elif os.getenv('DATABASE_STORAGE') == "gcs":
     scopes = ['https://www.googleapis.com/auth/devstorage.full_control']
     credentials = ServiceAccountCredentials.from_json_keyfile_name(os.getenv('GS_APPLICATION_CREDS'), scopes=scopes)
     with open(os.getenv('GS_APPLICATION_CREDS')) as data_file:
         data = json.load(data_file)
-    conn = Client(credentials=credentials, project=data['project_id'])
+    client = Client(credentials=credentials, project=data['project_id'])
     exists = True
     try:
-        conn.get_bucket(bucket_name)
+        client.get_bucket(bucket_name)
     except exceptions.NotFound:
         exists = False
     except:
         raise
     if not exists:
-        conn.create_bucket(bucket_name)
+        client.create_bucket(bucket_name)
 
 elif os.getenv('DATABASE_STORAGE') == "azure":
-    conn = BlobService(account_name=os.getenv('WABS_ACCOUNT_NAME'), account_key=os.getenv('WABS_ACCESS_KEY'))
+    block_blob_service = BlockBlobService(account_name=os.getenv('WABS_ACCOUNT_NAME'), account_key=os.getenv('WABS_ACCESS_KEY'))
     #It doesn't throw an exception if the container exists by default(https://github.com/Azure/azure-storage-python/blob/master/azure/storage/blob/baseblobservice.py#L504).
-    conn.create_container(bucket_name)
+    block_blob_service.create_container(bucket_name)
 
 elif os.getenv('DATABASE_STORAGE') == "swift":
     conn = swiftclient.Connection(
@@ -59,15 +65,20 @@ elif os.getenv('DATABASE_STORAGE') == "swift":
     conn.put_container(os.getenv('BUCKET_NAME'))
 
 else:
-    botoconfig.add_section('s3')
-    botoconfig.set('s3', 'use-sigv4', 'True')
-    botoconfig.add_section('Boto')
-    botoconfig.set('Boto', 'is_secure', 'False')
-    conn = S3Connection(
-        host=os.getenv('S3_HOST'),
-        port=int(os.getenv('S3_PORT')),
-        calling_format=OrdinaryCallingFormat())
-    # HACK(bacongobbler): allow boto to connect to minio by changing the region name for s3v4 auth
-    conn.auth_region_name = os.getenv('AWS_REGION')
-    if not bucket_exists(conn, bucket_name):
-        conn.create_bucket(bucket_name)
+    conn = boto3.resource('s3', endpoint_url=os.getenv('S3_URL'), config=Config(signature_version='s3v4'))
+    # stop boto3 from automatically changing the endpoint
+    conn.meta.client.meta.events.unregister('before-sign.s3', fix_s3_host)
+    exists = True
+    try:
+        conn.meta.client.head_bucket(Bucket=bucket_name)
+    except botocore.exceptions.ClientError as e:
+        # If a client error is thrown, then check that it was a 404 error.
+        # If it was a 404 error, then the bucket does not exist.
+        error_code = int(e.response['Error']['Code'])
+        if error_code == 404:
+            exists = False
+        else:
+            raise
+
+    if not exists:
+        conn.create_bucket(Bucket=bucket_name)
