@@ -6,22 +6,25 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
   AWS_ACCESS_KEY_ID=$(cat /var/run/secrets/deis/objectstore/creds/accesskey)
   AWS_SECRET_ACCESS_KEY=$(cat /var/run/secrets/deis/objectstore/creds/secretkey)
   if [[ "$DATABASE_STORAGE" == "s3" ]]; then
-    AWS_REGION=$(cat /var/run/secrets/deis/objectstore/creds/region)
+    AWS_DEFAULT_REGION=$(cat /var/run/secrets/deis/objectstore/creds/region)
     BUCKET_NAME=$(cat /var/run/secrets/deis/objectstore/creds/database-bucket)
   else
-    AWS_REGION="us-east-1"
-    BUCKET_NAME="dbwal"
     # these only need to be set if we're not accessing S3 (boto will figure this out)
-    echo "http+path://s3-$AWS_REGION.$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > WALE_S3_ENDPOINT
-    echo "$DEIS_MINIO_SERVICE_HOST" > S3_HOST
-    echo "$DEIS_MINIO_SERVICE_PORT" > S3_PORT
-    # enable sigv4 authentication
-    echo "true" > S3_USE_SIGV4
+    echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > WALE_S3_ENDPOINT
+    if [ "$DEIS_MINIO_SERVICE_PORT" == "80" ]; then
+      # If you add port 80 to the end of the endpoint_url, boto3 freaks out.
+      # God I hate boto3 some days.
+      echo "http://$DEIS_MINIO_SERVICE_HOST" > S3_URL
+    else
+      echo "http://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > S3_URL
+    fi
+    AWS_DEFAULT_REGION="us-east-1"
+    BUCKET_NAME="dbwal"
   fi
   echo "s3://$BUCKET_NAME" > WALE_S3_PREFIX
   echo $AWS_ACCESS_KEY_ID > AWS_ACCESS_KEY_ID
   echo $AWS_SECRET_ACCESS_KEY > AWS_SECRET_ACCESS_KEY
-  echo $AWS_REGION > AWS_REGION
+  echo $AWS_DEFAULT_REGION > AWS_DEFAULT_REGION
   echo $BUCKET_NAME > BUCKET_NAME
 elif [ "$DATABASE_STORAGE" == "gcs" ]; then
   GS_APPLICATION_CREDS="/var/run/secrets/deis/objectstore/creds/key.json"
