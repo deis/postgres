@@ -12,7 +12,7 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
     AWS_REGION="us-east-1"
     BUCKET_NAME="dbwal"
     # these only need to be set if we're not accessing S3 (boto will figure this out)
-    echo "http+path://s3-$AWS_REGION.$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > WALE_S3_ENDPOINT
+    echo "http+path://$DEIS_MINIO_SERVICE_HOST:$DEIS_MINIO_SERVICE_PORT" > WALE_S3_ENDPOINT
     echo "$DEIS_MINIO_SERVICE_HOST" > S3_HOST
     echo "$DEIS_MINIO_SERVICE_PORT" > S3_PORT
     # enable sigv4 authentication
