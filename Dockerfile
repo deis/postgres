@@ -1,4 +1,4 @@
-FROM quay.io/deis/base:v0.3.4
+FROM quay.io/deis/base:v0.3.5
 
 ENV LANG=en_US.utf8 \
     PG_MAJOR=9.4 \
