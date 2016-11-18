@@ -45,6 +45,13 @@ spec:
             exec:
               command:
                 - is_running
+          lifecycle:
+            preStop:
+              exec:
+                commmand:
+                  - gosu
+                  - postgres
+                  - do_backup
             initialDelaySeconds: 30
             timeoutSeconds: 1
           volumeMounts:
