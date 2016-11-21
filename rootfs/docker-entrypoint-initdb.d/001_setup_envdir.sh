@@ -19,8 +19,12 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
     echo "true" > S3_USE_SIGV4
   fi
   echo "s3://$BUCKET_NAME" > WALE_S3_PREFIX
-  echo $AWS_ACCESS_KEY_ID > AWS_ACCESS_KEY_ID
-  echo $AWS_SECRET_ACCESS_KEY > AWS_SECRET_ACCESS_KEY
+  # if these values are empty, then the user is using IAM credentials so we don't want these in the
+  # environment
+  if [[ "$AWS_ACCESS_KEY_ID" != "" && "AWS_SECRET_ACCESS_KEY" != "" ]]; then
+    echo $AWS_ACCESS_KEY_ID > AWS_ACCESS_KEY_ID
+    echo $AWS_SECRET_ACCESS_KEY > AWS_SECRET_ACCESS_KEY
+  fi
   echo $AWS_REGION > AWS_REGION
   echo $BUCKET_NAME > BUCKET_NAME
 elif [ "$DATABASE_STORAGE" == "gcs" ]; then
