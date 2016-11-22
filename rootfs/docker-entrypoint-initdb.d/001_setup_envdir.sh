@@ -28,10 +28,10 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
   echo $AWS_REGION > AWS_REGION
   echo $BUCKET_NAME > BUCKET_NAME
 elif [ "$DATABASE_STORAGE" == "gcs" ]; then
-  GS_APPLICATION_CREDS="/var/run/secrets/deis/objectstore/creds/key.json"
+  GOOGLE_APPLICATION_CREDENTIALS="/var/run/secrets/deis/objectstore/creds/key.json"
   BUCKET_NAME=$(cat /var/run/secrets/deis/objectstore/creds/database-bucket)
   echo "gs://$BUCKET_NAME" > WALE_GS_PREFIX
-  echo $GS_APPLICATION_CREDS > GS_APPLICATION_CREDS
+  echo $GOOGLE_APPLICATION_CREDENTIALS > GOOGLE_APPLICATION_CREDENTIALS
   echo $BUCKET_NAME > BUCKET_NAME
 elif [ "$DATABASE_STORAGE" == "azure" ]; then
   WABS_ACCOUNT_NAME=$(cat /var/run/secrets/deis/objectstore/creds/accountname)

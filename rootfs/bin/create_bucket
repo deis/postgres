@@ -28,8 +28,8 @@ if os.getenv('DATABASE_STORAGE') == "s3":
 
 elif os.getenv('DATABASE_STORAGE') == "gcs":
     scopes = ['https://www.googleapis.com/auth/devstorage.full_control']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(os.getenv('GS_APPLICATION_CREDS'), scopes=scopes)
-    with open(os.getenv('GS_APPLICATION_CREDS')) as data_file:
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'), scopes=scopes)
+    with open(os.getenv('GOOGLE_APPLICATION_CREDENTIALS')) as data_file:
         data = json.load(data_file)
     conn = Client(credentials=credentials, project=data['project_id'])
     exists = True
