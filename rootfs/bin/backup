@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export BACKUP_FREQUENCY=${BACKUP_FREQUENCY:-12h}
+export BACKUP_FREQUENCY=${BACKUP_FREQUENCY:-4h}
 export BACKUPS_TO_RETAIN=${BACKUPS_TO_RETAIN:-5}
 
 while true; do
