@@ -2,7 +2,7 @@
 
 import os
 
-import boto.s3
+import boto
 import json
 import swiftclient
 from boto import config as botoconfig
@@ -19,13 +19,12 @@ def bucket_exists(conn, name):
     return True
 
 bucket_name = os.getenv('BUCKET_NAME')
-region = os.getenv('AWS_REGION')
 
 if os.getenv('DATABASE_STORAGE') == "s3":
-    conn = boto.s3.connect_to_region(region)
+    conn = boto.connect_s3()
 
     if not bucket_exists(conn, bucket_name):
-        conn.create_bucket(bucket_name, location=region)
+        conn.create_bucket(bucket_name)
 
 elif os.getenv('DATABASE_STORAGE') == "gcs":
     scopes = ['https://www.googleapis.com/auth/devstorage.full_control']

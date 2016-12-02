@@ -8,15 +8,6 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
   if [[ "$DATABASE_STORAGE" == "s3" ]]; then
     AWS_REGION=$(cat /var/run/secrets/deis/objectstore/creds/region)
     BUCKET_NAME=$(cat /var/run/secrets/deis/objectstore/creds/database-bucket)
-    # Convert $AWS_REGION into $WALE_S3_ENDPOINT to avoid "Connection reset by peer" from
-    # regions other than us-standard.
-    # See https://github.com/wal-e/wal-e/issues/167
-    # See https://github.com/boto/boto/issues/2207
-    if [[ "$AWS_REGION" == "us-east-1" ]]; then
-      echo "https+path://s3.amazonaws.com:443" > WALE_S3_ENDPOINT
-    else
-      echo "https+path://s3-${AWS_REGION}.amazonaws.com:443" > WALE_S3_ENDPOINT
-    fi
   else
     AWS_REGION="us-east-1"
     BUCKET_NAME="dbwal"
@@ -34,6 +25,9 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
     echo $AWS_ACCESS_KEY_ID > AWS_ACCESS_KEY_ID
     echo $AWS_SECRET_ACCESS_KEY > AWS_SECRET_ACCESS_KEY
   fi
+  # HACK(bacongobbler): hardcode region to us-east-1 regardless of set region
+  # see https://github.com/deis/postgres/issues/173
+  AWS_REGION="us-east-1"
   echo $AWS_REGION > AWS_REGION
   echo $BUCKET_NAME > BUCKET_NAME
 elif [ "$DATABASE_STORAGE" == "gcs" ]; then
