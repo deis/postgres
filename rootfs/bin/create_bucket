@@ -27,17 +27,17 @@ if os.getenv('DATABASE_STORAGE') == "s3":
     if not bucket_exists(conn, bucket_name):
         try:
             conn.create_bucket(bucket_name, location=region)
+        # NOTE(bacongobbler): for versions prior to v2.9.0, the bucket is created in the default region.
+        # if we got here, we need to propagate "us-east-1" into WALE_S3_ENDPOINT because the bucket
+        # exists in a different region and we cannot find it.
+        # TODO(bacongobbler): deprecate this once we drop support for v2.8.0 and lower
         except S3CreateError as err:
-            # try again in the default S3 region before giving up
-            default_region = 'us-east-1'
-            if region != default_region:
-                print('Failed to create bucket in {}, trying default region {}...'.format(
-                    region, default_region))
-                conn = boto.s3.connect_to_region(default_region)
-                if not bucket_exists(conn, bucket_name):
-                    conn.create_bucket(bucket_name, location=default_region)
-                # TODO: if we got here, somehow we need to propagate "us-east-1"
-                # into WALE_S3_ENDPOINT...
+            if region != 'us-east-1':
+                print('Failed to create bucket in {}. We are now assuming that the bucket was created in us-east-1.'.format(region))
+                with open(os.path.join(os.environ['WALE_ENVDIR'], "WALE_S3_ENDPOINT"), "w+") as file:
+                    file.write('https+path://s3.amazonaws.com:443')
+            else:
+                raise
 
 elif os.getenv('DATABASE_STORAGE') == "gcs":
     scopes = ['https://www.googleapis.com/auth/devstorage.full_control']
