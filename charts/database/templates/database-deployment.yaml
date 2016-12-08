@@ -6,7 +6,7 @@ metadata:
   labels:
     heritage: deis
   annotations:
-    component.deis.io/version: {{ .Values.docker_tag }}
+    component.deis.io/version: {{ .Values.postgres.docker_tag }}
 spec:
   replicas: 1
   strategy:
@@ -22,18 +22,18 @@ spec:
       serviceAccount: deis-database
       containers:
         - name: deis-database
-          image: quay.io/{{.Values.org}}/postgres:{{.Values.docker_tag}}
-          imagePullPolicy: {{.Values.pull_policy}}
+          image: quay.io/{{.Values.postgres.org}}/postgres:{{.Values.postgres.docker_tag}}
+          imagePullPolicy: {{.Values.postgres.pull_policy}}
           ports:
             - containerPort: 5432
-{{- if or (.Values.limits_cpu) (.Values.limits_memory)}}
+{{- if or (.Values.postgres.limits_cpu) (.Values.postgres.limits_memory)}}
           resources:
             limits:
-{{- if (.Values.limits_cpu) }}
-              cpu: {{.Values.limits_cpu}}
+{{- if (.Values.postgres.limits_cpu) }}
+              cpu: {{.Values.postgres.limits_cpu}}
 {{- end}}
-{{- if (.Values.limits_memory) }}
-              memory: {{.Values.limits_memory}}
+{{- if (.Values.postgres.limits_memory) }}
+              memory: {{.Values.postgres.limits_memory}}
 {{- end}}
 {{- end}}
           env:

@@ -1,9 +1,3 @@
-org: "deisci"
-pull_policy: "Always"
-docker_tag: canary
-# limits_cpu: "100m"
-# limits_memory: "50Mi"
-
 postgres:
   name: "database name"
   username: "database username"
@@ -11,3 +5,8 @@ postgres:
   host: "database host"
   port: "database port"
   timeout: "1200"
+  org: "deisci"
+  pull_policy: "Always"
+  docker_tag: canary
+  # limits_cpu: "100m"
+  # limits_memory: "50Mi"
