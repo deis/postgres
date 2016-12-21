@@ -3,6 +3,10 @@ pull_policy: "Always"
 docker_tag: canary
 # limits_cpu: "100m"
 # limits_memory: "50Mi"
+# The username and password to be used by the on-cluster database.
+# If left empty they will be generated using randAlphaNum
+username: ""
+password: ""
 
 postgres:
   name: "database name"
