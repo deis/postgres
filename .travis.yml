@@ -8,6 +8,7 @@ services:
 env:
   # HACK(bacongobbler): make travis tests work
   - DEIS_REGISTRY=travis-ci/
+  - DOCKER_BUILD_FLAGS="--pull --no-cache"
 install:
   - make docker-build
 script:
