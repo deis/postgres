@@ -30,7 +30,7 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
   echo "s3://$BUCKET_NAME" > WALE_S3_PREFIX
   # if these values are empty, then the user is using IAM credentials so we don't want these in the
   # environment
-  if [[ "$AWS_ACCESS_KEY_ID" != "" && "AWS_SECRET_ACCESS_KEY" != "" ]]; then
+  if [[ "$AWS_ACCESS_KEY_ID" == "" && "AWS_SECRET_ACCESS_KEY" == "" ]]; then
     echo $AWS_ACCESS_KEY_ID > AWS_ACCESS_KEY_ID
     echo $AWS_SECRET_ACCESS_KEY > AWS_SECRET_ACCESS_KEY
   fi
