@@ -26,7 +26,11 @@ if os.getenv('DATABASE_STORAGE') == "s3":
     conn = boto.s3.connect_to_region(region)
     if not bucket_exists(conn, bucket_name):
         try:
-            conn.create_bucket(bucket_name, location=region)
+            if region == "us-east-1":
+                # use "US Standard" region. workaround for https://github.com/boto/boto3/issues/125
+                conn.create_bucket(bucket_name)
+            else:
+                conn.create_bucket(bucket_name, location=region)
         # NOTE(bacongobbler): for versions prior to v2.9.0, the bucket is created in the default region.
         # if we got here, we need to propagate "us-east-1" into WALE_S3_ENDPOINT because the bucket
         # exists in a different region and we cannot find it.
