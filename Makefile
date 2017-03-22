@@ -25,13 +25,10 @@ docker-build:
 	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} .
 	docker tag ${IMAGE} ${MUTABLE_IMAGE}
 
-test: test-style test-unit test-functional
+test: test-style test-functional
 
 test-style:
 	${DEV_ENV_CMD} shellcheck $(SHELL_SCRIPTS)
-
-test-unit:
-	@echo "Implement functional tests in _tests directory"
 
 test-functional: test-functional-swift test-functional-minio
 
