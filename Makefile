@@ -8,7 +8,7 @@ IMAGE_PREFIX ?= deis
 
 include versioning.mk
 
-SHELL_SCRIPTS = $(wildcard _scripts/*.sh) rootfs/bin/backup rootfs/bin/is_running
+SHELL_SCRIPTS = $(wildcard _scripts/*.sh contrib/ci/*.sh rootfs/bin/*backup) rootfs/bin/is_running
 
 # The following variables describe the containerized development environment
 # and other build options
