@@ -33,6 +33,8 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
   if [[ "$AWS_ACCESS_KEY_ID" != "" && "$AWS_SECRET_ACCESS_KEY" != "" ]]; then
     echo $AWS_ACCESS_KEY_ID > AWS_ACCESS_KEY_ID
     echo $AWS_SECRET_ACCESS_KEY > AWS_SECRET_ACCESS_KEY
+  elif
+    echo "1" > AWS_INSTANCE_PROFILE
   fi
   echo $AWS_REGION > AWS_REGION
   echo $BUCKET_NAME > BUCKET_NAME
