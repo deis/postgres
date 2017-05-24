@@ -7,7 +7,7 @@ if [[ "$DATABASE_STORAGE" == "s3" || "$DATABASE_STORAGE" == "minio" ]]; then
   AWS_SECRET_ACCESS_KEY=$(cat /var/run/secrets/deis/objectstore/creds/secretkey)
   if [[ "$DATABASE_STORAGE" == "s3" ]]; then
     AWS_REGION=$(cat /var/run/secrets/deis/objectstore/creds/region)
-    BUCKET_NAME=$(cat /var/run/secrets/deis/objectstore/creds/database-bucket)
+    BUCKET_NAME=$(cat /var/run/secrets/deis/objectstore/creds/database-bucket | sed "s/[.]/-/g")
     # Convert $AWS_REGION into $WALE_S3_ENDPOINT to avoid "Connection reset by peer" from
     # regions other than us-standard.
     # See https://github.com/wal-e/wal-e/issues/167
