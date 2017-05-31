@@ -8,4 +8,4 @@ if [[ -f "$PGDATA/recovery.conf" ]]; then
   exit 1
 fi
 
-gosu postgres pg_ctl status
+gosu postgres psql -l -t >/dev/null 2>&1

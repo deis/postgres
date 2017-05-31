@@ -2,6 +2,8 @@
 
 export BACKUP_FREQUENCY=${BACKUP_FREQUENCY:-4h}
 
+until is_running; do sleep 1; done
+
 while true; do
     sleep "$BACKUP_FREQUENCY"
     do_backup
