@@ -2,7 +2,7 @@ FROM quay.io/deis/base:v0.3.6
 
 ENV LANG=en_US.utf8 \
     PG_MAJOR=9.4 \
-    PG_VERSION=9.4.13-1.pgdg16.04+1 \
+    PG_VERSION=9.4.14-1.pgdg16.04+1 \
     PGDATA=/var/lib/postgresql/data
 
 # Set this separately from those above since it depends on one of them
